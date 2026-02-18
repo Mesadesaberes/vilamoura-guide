@@ -14,21 +14,27 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100vh; width: 100%; overflow: hidden; background: #f4f7f9; font-family: 'Segoe UI', sans-serif; }
         
-        .lang-bar { background: #003366; display: flex; justify-content: center; gap: 5px; padding: 8px; border-bottom: 2px solid #c5a059; }
-        .lang-btn { background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff; padding: 5px 8px; border-radius: 10px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .lang-bar { background: #003366; display: flex; justify-content: center; gap: 5px; padding: 8px; border-bottom: 2px solid #c5a059; height: 35px; }
+        .lang-btn { background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff; padding: 3px 6px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .lang-btn.active { background: #c5a059; border-color: #c5a059; }
 
-        #root { height: calc(100vh - 50px); position: relative; }
+        #main-container { height: calc(100vh - 51px); position: relative; overflow-y: auto; }
 
-        .search-box { position: absolute; top: 70px; left: 10px; right: 10px; z-index: 10; }
-        .search-box input { width: 100%; padding: 12px 40px; border-radius: 25px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); box-sizing: border-box; font-size: 14px; }
-        .search-icon { position: absolute; left: 15px; top: 12px; color: #888; }
+        .search-area { padding: 10px 15px; background: #f4f7f9; }
+        .search-box-wrapper { position: relative; width: 100%; }
+        .search-box-wrapper input { width: 100%; padding: 10px 35px; border-radius: 20px; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .search-icon { position: absolute; left: 12px; top: 11px; color: #888; }
 
-        .cat-card { background: #fff; border-radius: 15px; text-align: center; padding: 20px 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+        .grid-cats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 15px 80px 15px; }
+        .cat-card { background: #fff; border-radius: 12px; text-align: center; padding: 15px 5px; box-shadow: 0 3px 6px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #eee; }
+        
+        .footer-explore { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: linear-gradient(transparent, #f4f7f9 20%); text-align: center; }
+        .btn-explore { width: 90%; padding: 12px; border-radius: 25px; background: #27ae60; color: #fff; border: none; font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
         .btn-menu-fixo { position: absolute; top: 15px; left: 15px; z-index: 9999; padding: 10px 20px; border-radius: 25px; background: #003366; color: #fff; border: 2px solid #fff; font-weight: bold; }
         
-        .list-container { padding: 15px; overflow-y: auto; height: 100%; box-sizing: border-box; }
         .item-row { display: flex; gap: 12px; background: #fff; padding: 10px; border-radius: 12px; margin-bottom: 10px; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        #map-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
     </style>
 </head>
 <body>
@@ -39,16 +45,16 @@
         const { useState, useEffect, useRef } = React;
 
         const i18n = {
-          pt: { search: "Procurar em Vilamoura...", enter: "ENTRAR", back: "VOLTAR", walk: "ROTA A PÉ", call: "LIGAR", cats: { hoteis: "Hotéis", comer: "Comer", bares: "Bares", lazer: "Lazer", golf: "Golf", lojas: "Lojas", imobiliarias: "Imóveis", util: "Útil" } },
-          en: { search: "Search Vilamoura...", enter: "ENTER", back: "BACK", walk: "WALK", call: "CALL", cats: { hoteis: "Hotels", comer: "Eat", bares: "Bars", lazer: "Leisure", golf: "Golf", lojas: "Shops", imobiliarias: "Property", util: "Useful" } },
-          fr: { search: "Chercher...", enter: "ENTRER", back: "RETOUR", walk: "MARCHER", call: "APPELER", cats: { hoteis: "Hôtels", comer: "Manger", bares: "Bars", lazer: "Loisirs", golf: "Golf", lojas: "Boutiques", imobiliarias: "Immo", util: "Utile" } },
-          de: { search: "Suche...", enter: "EINTRETEN", back: "ZURÜCK", walk: "GEHEN", call: "ANRUFEN", cats: { hoteis: "Hotels", comer: "Essen", bares: "Bars", lazer: "Freizeit", golf: "Golf", lojas: "Läden", imobiliarias: "Immo", util: "Nützlich" } },
-          es: { search: "Buscar...", enter: "ENTRAR", back: "VOLVER", walk: "CAMINAR", call: "LLAMAR", cats: { hoteis: "Hoteles", comer: "Comer", bares: "Bares", lazer: "Ocio", golf: "Golf", lojas: "Tiendas", imobiliarias: "Inmuebles", util: "Útil" } }
+          pt: { search: "Procurar...", enter: "ENTRAR", back: "VOLTAR", walk: "ROTA A PÉ", call: "LIGAR", explore: "📍 EXPLORAR TUDO", cats: { hoteis: "Hotéis", comer: "Comer", bares: "Bares", lazer: "Lazer", golf: "Golf", lojas: "Lojas", imobiliarias: "Imóveis", util: "Útil" } },
+          en: { search: "Search...", enter: "ENTER", back: "BACK", walk: "WALK", call: "CALL", explore: "📍 EXPLORE ALL", cats: { hoteis: "Hotels", comer: "Eat", bares: "Bars", lazer: "Leisure", golf: "Golf", lojas: "Shops", imobiliarias: "Property", util: "Useful" } },
+          fr: { search: "Chercher...", enter: "ENTRER", back: "RETOUR", walk: "MARCHER", call: "APPELER", explore: "📍 TOUT VOIR", cats: { hoteis: "Hôtels", comer: "Manger", bares: "Bars", lazer: "Loisirs", golf: "Golf", lojas: "Boutiques", imobiliarias: "Immo", util: "Utile" } },
+          de: { search: "Suche...", enter: "EINTRETEN", back: "ZURÜCK", walk: "GEHEN", call: "ANRUFEN", explore: "📍 ALLES SEHEN", cats: { hoteis: "Hotels", comer: "Essen", bares: "Bars", lazer: "Freizeit", golf: "Golf", lojas: "Läden", imobiliarias: "Immo", util: "Nützlich" } },
+          es: { search: "Buscar...", enter: "ENTRAR", back: "VOLVER", walk: "CAMINAR", call: "LLAMAR", explore: "📍 EXPLORAR TODO", cats: { hoteis: "Hoteles", comer: "Comer", bares: "Bares", lazer: "Ocio", golf: "Golf", lojas: "Tiendas", imobiliarias: "Inmuebles", util: "Útil" } }
         };
 
         const LOCAIS = [
             { id: "tivoli", nome: "Tivoli Marina", cat: "hoteis", sub: "5*", lat: 37.07433, lng: -8.12017, icon: "🏨", tel: "+351289303303", web: "https://www.tivolihotels.com", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbuotHReCbbgAZXVruQoDzpVQWaZTeqsqIHnANJDswD4BO8OF-oV0nfHsMd-G9zcEpAnpa2FTJtw94Fv0RiGgucHGOtnWz0UdQhce_R5A3inLhytkobCXvrP3bYc8T95Lv03hLt98GIbujpIZeCkiyHt6UZamuoo3MSLhhSBf9nawoKk-12X-8-i4C7GH_/w453-h301/Tivoli_Marina_Vilamoura_.jpg", info: { pt: "Luxo sobre a Marina", en: "Luxury over the Marina", fr: "Luxe sur la Marina", de: "Luxus am Hafen", es: "Lujo en la Marina" } },
-            { id: "hole19", nome: "19th Hole", cat: "bares", sub: "Sports Bar", lat: 37.0755, lng: -8.1192, icon: "🍺", tel: "+351914928110", web: "https://19thholevilamoura.com", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWj9XRvveJ01eX0XP2aJEuv-ECFUsDuigj5UD0KFVb-Kql5SgHo_lAQHS3LHREucUUi3Udwo06i2DJMKuky_1FQsYksvc27QAt7GfXwGb2166ylUrHDYhopxvS0hTh0Mid0tmgdmMoWo-JNqAsAI9DLizYbZrz8jAgNDAes-NKdwHT2P4UDV8kltccGE2o/w450-h234/19th%20HOLE.jpg", info: { pt: "Melhores Cocktails", en: "Best Cocktails", fr: "Meilleurs Cocktails", de: "Beste Cocktails", es: "Mejores Cócteles" } },
+            { id: "hole19", nome: "19th Hole", cat: "bares", sub: "Sports Bar", lat: 37.0755, lng: -8.1192, icon: "🍺", tel: "+351914928110", web: "https://19thholevilamoura.com", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWj9XRveJ01eX0XP2aJEuv-ECFUsDuigj5UD0KFVb-Kql5SgHo_lAQHS3LHREucUUi3Udwo06i2DJMKuky_1FQsYksvc27QAt7GfXwGb2166ylUrHDYhopxvS0hTh0Mid0tmgdmMoWo-JNqAsAI9DLizYbZrz8jAgNDAes-NKdwHT2P4UDV8kltccGE2o/w450-h234/19th%20HOLE.jpg", info: { pt: "Melhores Cocktails", en: "Best Cocktails", fr: "Meilleurs Cocktails", de: "Beste Cocktails", es: "Mejores Cócteles" } },
             { id: "ampalius", nome: "Vila Galé Ampalius", cat: "hoteis", sub: "4*", lat: 37.0773, lng: -8.1179, icon: "🏨", tel: "+351289303970", web: "https://www.vilagale.com", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhGVY9LR4Vy8uzfLr-M1OUhJ9VUCAYWg0OAbCOvXzoHhKTxr_3pvfa9I7eCk0tF6P8cHL35VyfCzFb7ZoVcwl-jCBhAdfa_zUuqgTXqnqUPBnZByM_x1lAO32VhpEJQiWGmcE9SbTAd-3AyGxWvJfXoajE0bw7W30cJHf95nymYA9ll8fQrUXD8usF5Fsms/w462-h307/Vila%20Gale%20Ampalius.jfif", info: { pt: "Frente à praia", en: "Beachfront", fr: "Face à la plage", de: "Direkt am Strand", es: "Frente a la playa" } },
             { id: "colombo", nome: "Colombo", cat: "comer", sub: "PT", lat: 37.0757, lng: -8.1150, icon: "🍴", tel: "+351289300919", web: "https://facebook.com/restaurantecolombo", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh8BrDSbJXJaPu4G5ahigmv5fnnO71cxKiQfxiJmAZe-jgUcX3cQQG6XXzP0sCgRO_W4jFbfBDytY2oRqaBSWmV8nOkSkapWCvRtFgwPTTGK7PoDNVs_mTeDW11iP_QIo2iwxRtvhkLbjwIRjuUI340anqpR5UchWkRLqQCvsBo0X7gPv97dDZ7xifW0uWY/s1600/20220930_194648.jpg", info: { pt: "Cozinha tradicional", en: "Traditional cuisine", fr: "Cuisine traditionnelle", de: "Traditionelle Küche", es: "Cocina tradicional" } },
             { id: "oldcourse", nome: "Old Course", cat: "golf", sub: "Dom Pedro", lat: 37.1021, lng: -8.1155, icon: "🏌️", tel: "+351289310341", web: "https://dompedrogolf.com", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi9TeufNw3s8cvFQCBMyEjurQCvim1PTN9Pgyp-wEehCZJXBgRNmvWMjjFIpwhWnbQu_jZ-s-7D8ufYQQTmccDbObpt4yIia1-xm3k0d1NiDCUORo_QIZkmFBmR4Z6dfxo7vWdHh538CPfO8Ar5SOfadBxHptQ0RDSUVp-hPaKJaSecDb5Q2WhPDzR8yOji/s320/old-course-with-logo.jpg", info: { pt: "Campo Clássico", en: "Classic Course", fr: "Parcours classique", de: "Klassischer Platz", es: "Campo Clásico" } },
@@ -79,44 +85,69 @@
         function App() {
           const [lang, setLang] = useState('pt');
           const [view, setView] = useState('splash');
-          const [cat, setCat] = useState(null);
+          const [catAtiva, setCatAtiva] = useState(null);
           const [gMap, setGMap] = useState(null);
           const [query, setQuery] = useState('');
           const mapRef = useRef(null);
           const dirRen = useRef(null);
           const dirSer = useRef(null);
-          const markers = useRef([]);
+          const markersRef = useRef([]);
 
           const t = i18n[lang];
 
           useEffect(() => {
             if (view === 'mapa' && !gMap) {
-              const m = new google.maps.Map(mapRef.current, { center: { lat: 37.076, lng: -8.118 }, zoom: 15, disableDefaultUI: true });
+              const m = new google.maps.Map(mapRef.current, { 
+                center: { lat: 37.076, lng: -8.118 }, 
+                zoom: 15, 
+                disableDefaultUI: true 
+              });
               dirSer.current = new google.maps.DirectionsService();
               dirRen.current = new google.maps.DirectionsRenderer({ map: m });
               setGMap(m);
             }
+          }, [view]);
+
+          // IMPORTANTE: Redesenha o mapa quando ele aparece
+          useEffect(() => {
+            if(gMap && view === 'mapa') {
+                google.maps.event.trigger(gMap, 'resize');
+            }
           }, [view, gMap]);
 
-          const showOnMap = (item) => {
-            markers.current.forEach(m => m.setMap(null));
-            const list = item ? [item] : LOCAIS;
+          const renderMarkers = (list) => {
+            if(!gMap) return;
+            markersRef.current.forEach(m => m.setMap(null));
+            markersRef.current = [];
+            
             list.forEach(loc => {
               const mark = new google.maps.Marker({
                 position: { lat: loc.lat, lng: loc.lng },
                 map: gMap,
                 label: { text: loc.icon, color: '#fff', fontSize: '14px' },
-                icon: { path: google.maps.SymbolPath.CIRCLE, scale: 15, fillColor: '#003366', fillOpacity: 1, strokeWeight: 2, strokeColor: '#fff' }
+                icon: { path: google.maps.SymbolPath.CIRCLE, scale: 16, fillColor: '#003366', fillOpacity: 1, strokeWeight: 2, strokeColor: '#fff' }
               });
+              
               mark.addListener("click", () => {
                 new google.maps.InfoWindow({
-                  content: `<div style="width:180px;"><img src="${loc.img}" style="width:100%;border-radius:5px;"/><h4 style="margin:5px 0;">${loc.nome}</h4><p style="font-size:11px;">${loc.info[lang]}</p><button onclick="window.calcRoute(${loc.lat},${loc.lng})" style="background:#27ae60;color:#fff;padding:8px;width:100%;border:none;border-radius:5px;font-weight:bold;">${t.walk}</button></div>`
+                  content: `<div style="width:180px; font-family:sans-serif;">
+                    <img src="${loc.img}" style="width:100%;border-radius:5px;"/>
+                    <h4 style="margin:5px 0; color:#003366;">${loc.nome}</h4>
+                    <p style="font-size:11px;">${loc.info[lang]}</p>
+                    <button onclick="window.calcRoute(${loc.lat},${loc.lng})" style="background:#27ae60;color:#fff;padding:8px;width:100%;border:none;border-radius:5px;font-weight:bold;cursor:pointer;">${t.walk}</button>
+                  </div>`
                 }).open(gMap, mark);
               });
-              markers.current.push(mark);
+              markersRef.current.push(mark);
             });
-            if(item) gMap.panTo({ lat: item.lat, lng: item.lng });
+          };
+
+          const handleSelectLoc = (item) => {
             setView('mapa');
+            setTimeout(() => {
+                renderMarkers(item ? [item] : LOCAIS);
+                if(item && gMap) gMap.panTo({ lat: item.lat, lng: item.lng });
+            }, 100);
           };
 
           window.calcRoute = (lat, lng) => {
@@ -138,7 +169,7 @@
                 ))}
               </div>
 
-              <div id="root">
+              <div id="main-container">
                 {view === 'splash' && (
                   <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#003366' }}>
                     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgcgTG65bbe2IDQQJzNptqaWtHiqAD2kQBDMa2QWhC94gD10X21cB-LrH4gtHgscfjXFO6Fq1MS8Qg9tOE-kVKAjUe-4h7sNUMRduS_05lNMKEuaG4ABJntJWd5TPpB6OKOvkAnYFjpEPmjaodtdbxdMShpC4jw2wkNU-75-SV7dLdXgTvCWJNv0ro3oBYi/s320/Vilamoura_Guide_Logo.gif" style={{ width: '70%', borderRadius: '20px' }} />
@@ -147,38 +178,45 @@
                 )}
 
                 {view === 'menu' && (
-                  <div className="list-container">
-                    <div className="search-box">
-                        <i className="fas fa-search search-icon"></i>
-                        <input type="text" placeholder={t.search} onChange={(e) => setQuery(e.target.value)} />
+                  <>
+                    <div className="search-area">
+                        <div className="search-box-wrapper">
+                            <i className="fas fa-search search-icon"></i>
+                            <input type="text" placeholder={t.search} value={query} onChange={(e) => setQuery(e.target.value)} />
+                        </div>
                     </div>
-                    {query ? (
-                        <div style={{marginTop:'70px'}}>
+                    
+                    {query.length > 0 ? (
+                        <div style={{padding: '0 15px'}}>
                             {filtered.map(l => (
-                                <div key={l.id} className="item-row" onClick={() => showOnMap(l)}>
+                                <div key={l.id} className="item-row" onClick={() => handleSelectLoc(l)}>
                                     <img src={l.img} style={{width:'50px', height:'50px', objectFit:'cover', borderRadius:'8px'}} />
-                                    <div><div style={{fontWeight:'bold'}}>{l.nome}</div><div style={{fontSize:'12px'}}>{l.info[lang]}</div></div>
+                                    <div><div style={{fontWeight:'bold', color:'#003366'}}>{l.nome}</div><div style={{fontSize:'12px', color:'#777'}}>{l.info[lang]}</div></div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop:'70px' }}>
+                        <div className="grid-cats">
                           {CATEGORIAS.map(c => (
-                            <div key={c.id} onClick={() => { setCat(c.id); setView('lista'); }} className="cat-card">
-                              <i className={`fas ${c.icon}`} style={{ fontSize: '22px', color: '#003366' }}></i>
-                              <div style={{ marginTop: '8px', fontSize: '13px', fontWeight: 'bold' }}>{t.cats[c.id]}</div>
+                            <div key={c.id} onClick={() => { setCatAtiva(c.id); setView('lista'); }} className="cat-card">
+                              <i className={`fas ${c.icon}`} style={{ fontSize: '24px', color: '#003366' }}></i>
+                              <div style={{ marginTop: '8px', fontSize: '13px', fontWeight: 'bold', color: '#444' }}>{t.cats[c.id]}</div>
                             </div>
                           ))}
                         </div>
                     )}
-                  </div>
+
+                    <div className="footer-explore">
+                        <button className="btn-explore" onClick={() => handleSelectLoc(null)}>{t.explore}</button>
+                    </div>
+                  </>
                 )}
 
                 {view === 'lista' && (
-                  <div className="list-container">
-                    <button onClick={() => setView('menu')} style={{ marginBottom: '15px', border: 'none', background: 'none', color: '#003366', fontWeight: 'bold' }}>← {t.back}</button>
-                    {LOCAIS.filter(l => l.cat === cat).map(l => (
-                      <div key={l.id} onClick={() => showOnMap(l)} className="item-row">
+                  <div style={{padding: '15px'}}>
+                    <button onClick={() => setView('menu')} style={{ marginBottom: '15px', border: 'none', background: 'none', color: '#003366', fontWeight: 'bold', fontSize: '16px' }}>← {t.back}</button>
+                    {LOCAIS.filter(l => l.cat === catAtiva).map(l => (
+                      <div key={l.id} onClick={() => handleSelectLoc(l)} className="item-row">
                         <img src={l.img} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '5px' }} />
                         <div><div style={{ fontWeight: 'bold', color: '#003366' }}>{l.nome}</div><div style={{ fontSize: '12px', color: '#666' }}>{l.info[lang]}</div></div>
                       </div>
@@ -186,10 +224,12 @@
                   </div>
                 )}
 
-                <div style={{ width: '100%', height: '100%', display: view === 'mapa' ? 'block' : 'none' }}>
-                  <button className="btn-menu-fixo" onClick={() => setView('menu')}>MENU</button>
-                  <div ref={mapRef} style={{ width: '100%', height: '100%' }}></div>
-                </div>
+                {view === 'mapa' && (
+                    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+                        <button className="btn-menu-fixo" onClick={() => setView('menu')}>MENU</button>
+                        <div ref={mapRef} id="map-canvas"></div>
+                    </div>
+                )}
               </div>
             </div>
           );
@@ -198,4 +238,3 @@
     </script>
 </body>
 </html>
-
