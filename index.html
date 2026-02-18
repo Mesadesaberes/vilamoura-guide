@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vilamoura Guide</title>
+    <title>Vilamoura Guide - Multi-Language</title>
     
-    <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgcgTG65bbe2IDQQJzNptqaWtHiqAD2kQBDMa2QWhC94gD10X21cB-LrH4gtHgscfjXFO6Fq1MS8Qg9tOE-kVKAjUe-4h7sNUMRduS_05lNMKEuaG4ABJntJWd5TPpB6OKOvkAnYFjpEPmjaodtdbxdMShpC4jw2wkNU-75-SV7dLdXgTvCWJNv0ro3oBYi/s150/Vilamoura_Guide_Logo.gif">
     <link rel="icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgcgTG65bbe2IDQQJzNptqaWtHiqAD2kQBDMa2QWhC94gD10X21cB-LrH4gtHgscfjXFO6Fq1MS8Qg9tOE-kVKAjUe-4h7sNUMRduS_05lNMKEuaG4ABJntJWd5TPpB6OKOvkAnYFjpEPmjaodtdbxdMShpC4jw2wkNU-75-SV7dLdXgTvCWJNv0ro3oBYi/s150/Vilamoura_Guide_Logo.gif">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,35 +14,36 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqRtZgE7hw-znacoAqXuXZ4SEGVuXWudo&libraries=places"></script>
 
     <style>
-        body, html { margin: 0; padding: 0; height: 100vh; width: 100%; overflow: hidden; background: #f4f7f9; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100vh; width: 100%; overflow: hidden; background: #f4f7f9; font-family: 'Segoe UI', sans-serif; }
         
-        /* BARRA DE LÍNGUAS PERSONALIZADA */
+        /* BARRA DE LÍNGUAS */
         .lang-bar {
             background: #003366;
             display: flex;
             justify-content: center;
-            gap: 20px;
-            padding: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 5px;
             border-bottom: 2px solid #c5a059;
         }
         .lang-btn {
-            background: none; border: 1px solid #fff; color: #fff;
-            padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 12px;
-            transition: 0.3s;
+            background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;
+            padding: 4px 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
+            transition: 0.3s; font-weight: bold;
         }
-        .lang-btn.active { background: #c5a059; border-color: #c5a059; font-weight: bold; }
+        .lang-btn.active { background: #c5a059; border-color: #c5a059; }
 
-        #root { height: calc(100vh - 45px); position: relative; }
+        #root { height: calc(100vh - 55px); position: relative; }
 
-        .cat-card { transition: all 0.2s; cursor: pointer; background: #fff; border-radius: 15px; text-align: center; padding: 25px 10px; box-shadow: 0 4px 12px rgba(0,51,102,0.08); }
+        .cat-card { transition: all 0.2s; cursor: pointer; background: #fff; border-radius: 15px; text-align: center; padding: 20px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .cat-card:active { transform: scale(0.95); }
         
         .btn-action { display: block; text-align: center; padding: 10px; margin-top: 8px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px; color: #fff !important; width: 100%; box-sizing: border-box; border: none; }
         
         .btn-menu-fixo {
             position: absolute; top: 15px; left: 15px; z-index: 9999;
-            padding: 12px 20px; border-radius: 25px; background: #003366;
-            color: #fff; border: 2px solid #fff; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            padding: 10px 18px; border-radius: 20px; background: #003366;
+            color: #fff; border: 2px solid #fff; font-weight: bold;
         }
     </style>
 </head>
@@ -54,34 +54,25 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // DICIONÁRIO DE TRADUÇÃO
         const i18n = {
-          pt: {
-            enter: "ENTRAR",
-            viewAll: "📍 VER TUDO",
-            back: "VOLTAR",
-            walk: "ROTA A PÉ",
-            call: "LIGAR",
-            web: "WEBSITE",
-            cats: { hoteis: "Hotéis", comer: "Restaurantes", bares: "Pubs & Bares", lazer: "Lazer", golf: "Golf", lojas: "Lojas", imobiliarias: "Propriedades", util: "Utilitários" }
-          },
-          en: {
-            enter: "ENTER",
-            viewAll: "📍 VIEW ALL",
-            back: "BACK",
-            walk: "WALKING ROUTE",
-            call: "CALL",
-            web: "WEBSITE",
-            cats: { hoteis: "Hotels", comer: "Restaurants", bares: "Pubs & Bars", lazer: "Leisure", golf: "Golf", lojas: "Shops", imobiliarias: "Real Estate", util: "Utilities" }
-          }
+          pt: { enter: "ENTRAR", viewAll: "📍 VER TUDO", back: "VOLTAR", walk: "ROTA A PÉ", call: "LIGAR", web: "SITE", cats: { hoteis: "Hotéis", comer: "Comer", bares: "Bares", lazer: "Lazer", golf: "Golf", lojas: "Lojas", imobiliarias: "Imóveis", util: "Útil" } },
+          en: { enter: "ENTER", viewAll: "📍 VIEW ALL", back: "BACK", walk: "WALK", call: "CALL", web: "WEB", cats: { hoteis: "Hotels", comer: "Eat", bares: "Bars", lazer: "Leisure", golf: "Golf", lojas: "Shops", imobiliarias: "Property", util: "Useful" } },
+          fr: { enter: "ENTRER", viewAll: "📍 VOIR TOUT", back: "RETOUR", walk: "MARCHER", call: "APPELER", web: "SITE", cats: { hoteis: "Hôtels", comer: "Manger", bares: "Bars", lazer: "Loisirs", golf: "Golf", lojas: "Boutiques", imobiliarias: "Immobilier", util: "Utile" } },
+          de: { enter: "EINTRETEN", viewAll: "📍 ALLES SEHEN", back: "ZURÜCK", walk: "GEHEN", call: "ANRUFEN", web: "WEB", cats: { hoteis: "Hotels", comer: "Essen", bares: "Bars", lazer: "Freizeit", golf: "Golf", lojas: "Läden", imobiliarias: "Immobilien", util: "Nützlich" } },
+          es: { enter: "ENTRAR", viewAll: "📍 VER TODO", back: "VOLVER", walk: "CAMINAR", call: "LLAMAR", web: "WEB", cats: { hoteis: "Hoteles", comer: "Comer", bares: "Bares", lazer: "Ocio", golf: "Golf", lojas: "Tiendas", imobiliarias: "Inmuebles", util: "Útil" } }
         };
 
         const LOCAIS = [
-          { id: "tivoli", nome: "Tivoli Marina", cat: "hoteis", sub: "5 Stars", info_pt: "Luxo sobre a Marina", info_en: "Luxury over the Marina", lat: 37.07433, lng: -8.12017, icon: "🏨", tel: "+351289303303", web: "https://www.tivolihotels.com", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbuotHReCbbgAZXVruQoDzpVQWaZTeqsqIHnANJDswD4BO8OF-oV0nfHsMd-G9zcEpAnpa2FTJtw94Fv0RiGgucHGOtnWz0UdQhce_R5A3inLhytkobCXvrP3bYc8T95Lv03hLt98GIbujpIZeCkiyHt6UZamuoo3MSLhhSBf9nawoKk-12X-8-i4C7GH_/w453-h301/Tivoli_Marina_Vilamoura_.jpg" },
-          { id: "hole19", nome: "19th Hole", cat: "bares", sub: "Sports Bar", info_pt: "Melhores Cocktails", info_en: "Best Cocktails", lat: 37.0755, lng: -8.1192, tel: "+351914928110", web: "https://19thholevilamoura.com", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWj9XRveJ01eX0XP2aJEuv-ECFUsDuigj5UD0KFVb-Kql5SgHo_lAQHS3LHREucUUi3Udwo06i2DJMKuky_1FQsYksvc27QAt7GfXwGb2166ylUrHDYhopxvS0hTh0Mid0tmgdmMoWo-JNqAsAI9DLizYbZrz8jAgNDAes-NKdwHT2P4UDV8kltccGE2o/w450-h234/19th%20HOLE.jpg" },
-          { id: "colombo", nome: "Colombo", cat: "comer", sub: "Português", info_pt: "Cozinha tradicional", info_en: "Traditional cuisine", lat: 37.0757, lng: -8.1150, icon: "🍴", tel: "+351289300919", web: "https://www.facebook.com/restaurantecolombo", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh8BrDSbJXJaPu4G5ahigmv5fnnO71cxKiQfxiJmAZe-jgUcX3cQQG6XXzP0sCgRO_W4jFbfBDytY2oRqaBSWmV8nOkSkapWCvRtFgwPTTGK7PoDNVs_mTeDW11iP_QIo2iwxRtvhkLbjwIRjuUI340anqpR5UchWkRLqQCvsBo0X7gPv97dDZ7xifW0uWY/s1600/20220930_194648.jpg" },
-          { id: "oldcourse", nome: "Old Course", cat: "golf", sub: "Dom Pedro", info_pt: "Campo Clássico", info_en: "Classic Course", lat: 37.1021, lng: -8.1155, icon: "🏌️", tel: "+351289310341", web: "https://www.dompedrogolf.com", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi9TeufNw3s8cvFQCBMyEjurQCvim1PTN9Pgyp-wEehCZJXBgRNmvWMjjFIpwhWnbQu_jZ-s-7D8ufYQQTmccDbObpt4yIia1-xm3k0d1NiDCUORo_QIZkmFBmR4Z6dfxo7vWdHh538CPfO8Ar5SOfadBxHptQ0RDSUVp-hPaKJaSecDb5Q2WhPDzR8yOji/s320/old-course-with-logo.jpg" }
-          // Adiciona os outros aqui seguindo o mesmo modelo info_pt e info_en
+          { id: "tivoli", nome: "Tivoli Marina", cat: "hoteis", sub: "5*", 
+            info: { pt: "Luxo sobre a Marina", en: "Luxury over the Marina", fr: "Luxe sur la Marina", de: "Luxus am Yachthafen", es: "Lujo sobre la Marina" },
+            lat: 37.07433, lng: -8.12017, icon: "🏨", tel: "+351289303303", web: "https://www.tivolihotels.com", 
+            img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbuotHReCbbgAZXVruQoDzpVQWaZTeqsqIHnANJDswD4BO8OF-oV0nfHsMd-G9zcEpAnpa2FTJtw94Fv0RiGgucHGOtnWz0UdQhce_R5A3inLhytkobCXvrP3bYc8T95Lv03hLt98GIbujpIZeCkiyHt6UZamuoo3MSLhhSBf9nawoKk-12X-8-i4C7GH_/w453-h301/Tivoli_Marina_Vilamoura_.jpg" },
+          
+          { id: "hole19", nome: "19th Hole", cat: "bares", sub: "Sports Bar", 
+            info: { pt: "Melhores Cocktails", en: "Best Cocktails", fr: "Meilleurs Cocktails", de: "Beste Cocktails", es: "Mejores Cócteles" },
+            lat: 37.0755, lng: -8.1192, icon: "🍺", tel: "+351914928110", web: "https://19thholevilamoura.com", 
+            img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWj9XRveJ01eX0XP2aJEuv-ECFUsDuigj5UD0KFVb-Kql5SgHo_lAQHS3LHREucUUi3Udwo06i2DJMKuky_1FQsYksvc27QAt7GfXwGb2166ylUrHDYhopxvS0hTh0Mid0tmgdmMoWo-JNqAsAI9DLizYbZrz8jAgNDAes-NKdwHT2P4UDV8kltccGE2o/w450-h234/19th%20HOLE.jpg" }
+          // Nota: Para adicionar mais, basta seguir este modelo de "info: { pt: '', en: '', ... }"
         ];
 
         const CATEGORIAS = [
@@ -99,7 +90,7 @@
           const mapRef = useRef(null);
           const dirRen = useRef(null);
           const dirSer = useRef(null);
-          const pending = useRef(null);
+          const markers = useRef([]);
 
           const t = i18n[lang];
 
@@ -110,38 +101,35 @@
               dirRen.current = new google.maps.DirectionsRenderer({ map: m });
               setGMap(m);
             }
-          }, [view]);
+          }, [view, gMap]);
 
-          useEffect(() => {
-            if (gMap && view === 'mapa') {
-              const p = pending.current || { all: true };
-              const list = p.all ? LOCAIS : [p.item];
-              list.forEach(loc => {
-                const mark = new google.maps.Marker({ position: { lat: loc.lat, lng: loc.lng }, map: gMap, label: loc.icon });
-                mark.addListener("click", () => {
-                  const iw = new google.maps.InfoWindow({
-                    content: `
-                      <div style="width:200px; font-family:sans-serif;">
-                        <img src="${loc.img}" style="width:100%; border-radius:8px;"/>
-                        <h4 style="margin:5px 0; color:#003366;">${loc.nome}</h4>
-                        <p style="font-size:12px;">${lang === 'pt' ? loc.info_pt : loc.info_en}</p>
-                        <button onclick="window.calcRoute(${loc.lat},${loc.lng})" style="background:#27ae60; color:#fff; padding:8px; width:100%; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">${t.walk}</button>
-                        <a href="tel:${loc.tel}" style="display:block; background:#003366; color:#fff; text-align:center; padding:8px; margin-top:5px; text-decoration:none; border-radius:5px; font-weight:bold;">${t.call}</a>
-                      </div>`
-                  });
-                  iw.open(gMap, mark);
+          const showOnMap = (item) => {
+            markers.current.forEach(m => m.setMap(null));
+            const list = item ? [item] : LOCAIS;
+            list.forEach(loc => {
+              const mark = new google.maps.Marker({ position: { lat: loc.lat, lng: loc.lng }, map: gMap, label: loc.icon });
+              mark.addListener("click", () => {
+                const iw = new google.maps.InfoWindow({
+                  content: `<div style="width:180px; font-family:sans-serif;">
+                    <img src="${loc.img}" style="width:100%; border-radius:5px;"/>
+                    <h4 style="margin:5px 0;">${loc.nome}</h4>
+                    <p style="font-size:11px;">${loc.info[lang]}</p>
+                    <button onclick="window.calcRoute(${loc.lat},${loc.lng})" style="background:#27ae60; color:#fff; padding:8px; width:100%; border:none; border-radius:5px; font-weight:bold;">${t.walk}</button>
+                  </div>`
                 });
+                iw.open(gMap, mark);
               });
-              if (p.item) gMap.panTo({ lat: p.item.lat, lng: p.item.lng });
-            }
-          }, [gMap, view, lang]);
+              markers.current.push(mark);
+            });
+            if(item) gMap.panTo({ lat: item.lat, lng: item.lng });
+            setView('mapa');
+          };
 
           window.calcRoute = (lat, lng) => {
             navigator.geolocation.getCurrentPosition(pos => {
               dirSer.current.route({
                 origin: { lat: pos.coords.latitude, lng: pos.coords.longitude },
-                destination: { lat, lng },
-                travelMode: google.maps.TravelMode.WALKING
+                destination: { lat, lng }, travelMode: google.maps.TravelMode.WALKING
               }, (r, s) => { if (s === 'OK') dirRen.current.setDirections(r); });
             });
           };
@@ -149,8 +137,9 @@
           return (
             <div style={{height: '100%'}}>
               <div className="lang-bar">
-                <button className={`lang-btn ${lang === 'pt' ? 'active' : ''}`} onClick={() => setLang('pt')}>PT</button>
-                <button className={`lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>EN</button>
+                {['pt','en','fr','de','es'].map(l => (
+                  <button key={l} className={`lang-btn ${lang === l ? 'active' : ''}`} onClick={() => setLang(l)}>{l.toUpperCase()}</button>
+                ))}
               </div>
 
               <div id="root">
@@ -162,28 +151,28 @@
                 )}
 
                 {view === 'menu' && (
-                  <div style={{ padding: '20px', overflowY: 'auto', height: '100%', boxSizing: 'border-box' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                  <div style={{ padding: '15px', overflowY: 'auto', height: '100%', boxSizing: 'border-box' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                       {CATEGORIAS.map(c => (
                         <div key={c.id} onClick={() => { setCat(c.id); setView('lista'); }} className="cat-card">
-                          <i className={`fas ${c.icon}`} style={{ fontSize: '24px', color: '#003366' }}></i>
-                          <div style={{ marginTop: '10px', fontWeight: 'bold' }}>{t.cats[c.id]}</div>
+                          <i className={`fas ${c.icon}`} style={{ fontSize: '22px', color: '#003366' }}></i>
+                          <div style={{ marginTop: '8px', fontSize: '14px', fontWeight: 'bold' }}>{t.cats[c.id]}</div>
                         </div>
                       ))}
                     </div>
-                    <button onClick={() => { pending.current = {all:true}; setView('mapa'); }} style={{ width: '100%', marginTop: '20px', padding: '15px', borderRadius: '15px', background: '#27ae60', color: '#fff', border: 'none', fontWeight: 'bold' }}>{t.viewAll}</button>
+                    <button onClick={() => showOnMap(null)} style={{ width: '100%', marginTop: '20px', padding: '15px', borderRadius: '15px', background: '#27ae60', color: '#fff', border: 'none', fontWeight: 'bold' }}>{t.viewAll}</button>
                   </div>
                 )}
 
                 {view === 'lista' && (
-                  <div style={{ padding: '20px' }}>
+                  <div style={{ padding: '15px' }}>
                     <button onClick={() => setView('menu')} style={{ marginBottom: '15px', border: 'none', background: 'none', color: '#003366', fontWeight: 'bold' }}>← {t.back}</button>
                     {LOCAIS.filter(l => l.cat === cat).map(l => (
-                      <div key={l.id} onClick={() => { pending.current = {item:l}; setView('mapa'); }} style={{ display: 'flex', gap: '10px', background: '#fff', padding: '10px', borderRadius: '10px', marginBottom: '10px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                      <div key={l.id} onClick={() => showOnMap(l)} style={{ display: 'flex', gap: '10px', background: '#fff', padding: '10px', borderRadius: '10px', marginBottom: '10px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                         <img src={l.img} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '5px' }} />
                         <div>
-                          <div style={{ fontWeight: 'bold', color: '#003366' }}>{l.nome}</div>
-                          <div style={{ fontSize: '12px', color: '#666' }}>{l.sub}</div>
+                          <div style={{ fontWeight: 'bold', color: '#003366', fontSize: '14px' }}>{l.nome}</div>
+                          <div style={{ fontSize: '12px', color: '#666' }}>{l.info[lang]}</div>
                         </div>
                       </div>
                     ))}
