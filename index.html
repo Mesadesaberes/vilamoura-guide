@@ -113,7 +113,26 @@
                 googleMap.current = new google.maps.Map(mapRef.current, {
                     center: { lat: 37.076, lng: -8.118 },
                     zoom: 15,
-                    disableDefaultUI: true
+                    disableDefaultUI: true,
+                    styles: [
+                        {
+                            featureType: "poi",
+                            elementType: "labels",
+                            stylers: [{ visibility: "off" }]
+                        },
+                        {
+                            featureType: "transit",
+                            elementType: "labels",
+                            stylers: [{ visibility: "off" }]
+                        }
+                    ]
+                });
+                directionsRenderer.current = new google.maps.DirectionsRenderer({
+                    map: googleMap.current,
+                    polylineOptions: { strokeColor: "#003366", strokeWeight: 5 }
+                });
+            }
+          }, [view]);
                 });
                 directionsRenderer.current = new google.maps.DirectionsRenderer({
                     map: googleMap.current,
@@ -250,3 +269,4 @@
     </script>
 </body>
 </html>
+
