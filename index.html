@@ -36,8 +36,8 @@
         .footer-nav { position: absolute; bottom: 0; width: 100%; padding: 15px; background: white; border-top: 1px solid #eee; box-sizing: border-box; text-align: center; }
         .btn-explore { width: 100%; max-width: 300px; padding: 14px; border-radius: 30px; background: #27ae60; color: white; border: none; font-weight: bold; cursor: pointer; }
         
-        /* NOVO: Botão Explore no topo da grelha */
-        .explore-top-btn {
+        /* Botão Explore abaixo das categorias */
+        .explore-below-btn {
             width: 100%;
             max-width: 300px;
             padding: 12px;
@@ -47,7 +47,7 @@
             border: none;
             font-weight: bold;
             cursor: pointer;
-            margin: 10px auto 15px auto;
+            margin: 20px auto 10px auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -249,15 +249,7 @@
                         </div>
                     ) : subView === 'grid' ? (
                         <div>
-                            {/* NOVO BOTÃO: EXPLORAR TUDO - VISÍVEL NO TOPO DA GRELHA */}
-                            <button 
-                                className="explore-top-btn"
-                                onClick={() => openMap(LOCAIS)}
-                            >
-                                <i className="fas fa-map-marked-alt"></i>
-                                {t.explore}
-                            </button>
-                            
+                            {/* GRELHA DE CATEGORIAS (FAMÍLIAS) */}
                             <div className="grid-cats">
                                 {CATEGORIAS.map(c => (
                                     <div key={c.id} className="cat-card" onClick={() => { setCatAtiva(c.id); setSubView('lista'); }}>
@@ -266,6 +258,15 @@
                                     </div>
                                 ))}
                             </div>
+                            
+                            {/* BOTÃO EXPLORAR ABAIXO DAS CATEGORIAS */}
+                            <button 
+                                className="explore-below-btn"
+                                onClick={() => openMap(LOCAIS)}
+                            >
+                                <i className="fas fa-map-marked-alt"></i>
+                                {t.explore}
+                            </button>
                         </div>
                     ) : (
                         <div>
@@ -303,7 +304,6 @@
                             ))}
                         </div>
                     )}
-                    {/* Botão no rodapé mantido para consistência */}
                     <div className="footer-nav"><button className="btn-explore" onClick={() => openMap(LOCAIS)}>{t.explore}</button></div>
                 </div>
                 <div className="map-view" style={{ visibility: subView === 'mapa' ? 'visible' : 'hidden' }}>
