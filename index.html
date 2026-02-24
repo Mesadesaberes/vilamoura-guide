@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vilamoura Select</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#003366">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Vilamoura Select">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -19,7 +30,6 @@
         body, html { margin: 0; padding: 0; height: 100vh; width: 100%; overflow: hidden; background: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #root { height: 100%; width: 100%; }
         
-        /* SPLASH SCREEN */
         .splash-screen { 
             position: fixed; 
             inset: 0; 
@@ -27,10 +37,144 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: center; 
+            justify-content: center;
             z-index: 1000; 
-            padding: 20px;
             box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .welcome-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #003366 0%, #004080 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            color: #ffffff;
+            overflow-y: auto;
+        }
+
+        .welcome-content {
+            max-width: 380px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .welcome-logo {
+            width: 100px;
+            height: 100px;
+            background: #ffffff;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .welcome-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #c5a059;
+        }
+
+        .welcome-text {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            opacity: 0.95;
+            max-width: 340px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .lang-select-title {
+            font-size: 11px;
+            margin-bottom: 12px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .lang-grid-flags {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .lang-flag-option {
+            width: 42px;
+            height: 34px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .lang-flag-option:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.08);
+        }
+
+        .lang-flag-option.selected {
+            background: rgba(197, 160, 89, 0.3);
+            border-color: #c5a059;
+            box-shadow: 0 0 12px rgba(197, 160, 89, 0.5);
+        }
+
+        .welcome-btn {
+            width: 100%;
+            max-width: 260px;
+            padding: 14px 24px;
+            background: #c5a059;
+            color: #003366;
+            border: none;
+            border-radius: 28px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+            transition: transform 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .welcome-btn:hover {
+            transform: scale(1.03);
+        }
+
+        .welcome-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 12px;
+            opacity: 0.75;
+            cursor: pointer;
+        }
+
+        .welcome-checkbox input {
+            width: 16px;
+            height: 16px;
+            accent-color: #c5a059;
         }
 
         .lang-bar { background: #003366; display: flex; justify-content: center; gap: 4px; padding: 8px; border-bottom: 2px solid #c5a059; height: 45px; box-sizing: border-box; }
@@ -89,7 +233,6 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // Firebase Config (os seus dados reais)
         const firebaseConfig = {
             apiKey: "AIzaSyDfUDqEJxVnWbQgn6LEVQAjlKeBJdp0vyY",
             authDomain: "vilamoura-select.firebaseapp.com",
@@ -100,27 +243,54 @@
             measurementId: "G-X73F6HT81C"
         };
 
-        // Inicializar Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
 
+        const languages = [
+            { code: 'pt', flag: 'https://flagcdn.com/w40/pt.png', name: 'Português' },
+            { code: 'en', flag: 'https://flagcdn.com/w40/gb.png', name: 'English' },
+            { code: 'fr', flag: 'https://flagcdn.com/w40/fr.png', name: 'Français' },
+            { code: 'de', flag: 'https://flagcdn.com/w40/de.png', name: 'Deutsch' },
+            { code: 'es', flag: 'https://flagcdn.com/w40/es.png', name: 'Español' }
+        ];
+
         const i18n = {
-          pt: { enter: "ENTRAR", search: "Procurar...", back: "VOLTAR", route: "CALCULAR ROTA", call: "LIGAR", visit: "WEBSITE", explore: "📍 EXPLORAR TUDO", loading: "A carregar...", cats: { hoteis: "Hotéis", comer: "Comer", bares: "Bares", lazer: "Lazer", golf: "Golf", lojas: "Lojas", imobiliarias: "Imóveis", util: "Útil" } },
-          en: { enter: "ENTER", search: "Search...", back: "BACK", route: "GET ROUTE", call: "CALL", visit: "WEBSITE", explore: "📍 EXPLORE ALL", loading: "Loading...", cats: { hoteis: "Hotels", comer: "Eat", bares: "Bars", lazer: "Leisure", golf: "Golf", lojas: "Shops", imobiliarias: "Property", util: "Useful" } },
-          fr: { enter: "ENTRER", search: "Chercher...", back: "RETOUR", route: "ITINÉRAIRE", call: "APPELER", visit: "SITE WEB", explore: "📍 TOUT VOIR", loading: "Chargement...", cats: { hoteis: "Hôtels", comer: "Manger", bares: "Bars", lazer: "Loisirs", golf: "Golf", lojas: "Boutiques", imobiliarias: "Immo", util: "Utile" } },
-          de: { enter: "EINTRETEN", search: "Suche...", back: "ZURÜCK", route: "ROUTE BERECHNEN", call: "ANRUFEN", visit: "WEBSEITE", explore: "📍 ALLES SEHEN", loading: "Laden...", cats: { hoteis: "Hotels", comer: "Essen", bares: "Bars", lazer: "Freizeit", golf: "Golf", lojas: "Läden", imobiliarias: "Immo", util: "Nützlich" } },
-          es: { enter: "ENTRAR", search: "Buscar...", back: "VOLVER", route: "CALCULAR RUTA", call: "LLAMAR", visit: "SITIO WEB", explore: "📍 EXPLORAR TODO", loading: "Cargando...", cats: { hoteis: "Hoteles", comer: "Comer", bares: "Bares", lazer: "Ocio", golf: "Golf", lojas: "Tiendas", imobiliarias: "Inmuebles", util: "Útil" } }
+          pt: { enter: "ENTRAR", search: "Procurar...", back: "VOLTAR", route: "CALCULAR ROTA", call: "LIGAR", visit: "WEBSITE", explore: "📍 EXPLORAR TUDO", loading: "A carregar...", welcome: "Bem-vindo", welcomeText: "O seu guia independente para descobrir o melhor de Vilamoura. Selecione o seu idioma para começar.", selectLang: "Idioma", start: "COMEÇAR", dontShowAgain: "Não mostrar novamente", cats: { hoteis: "Hotéis", comer: "Comer", bares: "Bares", lazer: "Lazer", golf: "Golf", lojas: "Lojas", imobiliarias: "Imóveis", util: "Útil" } },
+          en: { enter: "ENTER", search: "Search...", back: "BACK", route: "GET ROUTE", call: "CALL", visit: "WEBSITE", explore: "📍 EXPLORE ALL", loading: "Loading...", welcome: "Welcome", welcomeText: "Your independent guide to discover the best of Vilamoura. Select your language to begin.", selectLang: "Language", start: "GET STARTED", dontShowAgain: "Don't show again", cats: { hoteis: "Hotels", comer: "Eat", bares: "Bars", lazer: "Leisure", golf: "Golf", lojas: "Shops", imobiliarias: "Property", util: "Useful" } },
+          fr: { enter: "ENTRER", search: "Chercher...", back: "RETOUR", route: "ITINÉRAIRE", call: "APPELER", visit: "SITE WEB", explore: "📍 TOUT VOIR", loading: "Chargement...", welcome: "Bienvenue", welcomeText: "Votre guide indépendant pour découvrir le meilleur de Vilamoura. Sélectionnez votre langue pour commencer.", selectLang: "Langue", start: "COMMENCER", dontShowAgain: "Ne plus afficher", cats: { hoteis: "Hôtels", comer: "Manger", bares: "Bars", lazer: "Loisirs", golf: "Golf", lojas: "Boutiques", imobiliarias: "Immo", util: "Utile" } },
+          de: { enter: "EINTRETEN", search: "Suche...", back: "ZURÜCK", route: "ROUTE BERECHNEN", call: "ANRUFEN", visit: "WEBSEITE", explore: "📍 ALLES SEHEN", loading: "Laden...", welcome: "Willkommen", welcomeText: "Ihr unabhängiger Reiseführer, um das Beste von Vilamoura zu entdecken. Wählen Sie Ihre Sprache.", selectLang: "Sprache", start: "STARTEN", dontShowAgain: "Nicht wieder anzeigen", cats: { hoteis: "Hotels", comer: "Essen", bares: "Bars", lazer: "Freizeit", golf: "Golf", lojas: "Läden", imobiliarias: "Immo", util: "Nützlich" } },
+          es: { enter: "ENTRAR", search: "Buscar...", back: "VOLVER", route: "CALCULAR RUTA", call: "LLAMAR", visit: "SITIO WEB", explore: "📍 EXPLORAR TODO", loading: "Cargando...", welcome: "Bienvenido", welcomeText: "Tu guía independiente para descubrir lo mejor de Vilamoura. Selecciona tu idioma para comenzar.", selectLang: "Idioma", start: "COMENZAR", dontShowAgain: "No mostrar de nuevo", cats: { hoteis: "Hoteles", comer: "Comer", bares: "Bares", lazer: "Ocio", golf: "Golf", lojas: "Tiendas", imobiliarias: "Inmuebles", util: "Útil" } }
+          // Em pt:
+cats: { 
+  hoteis: "Hotéis", comer: "Comer", bares: "Bares", lazer: "Lazer", 
+  golf: "Golf", lojas: "Lojas", imobiliarias: "Imóveis", util: "Útil",
+  transportes: "Transportes",        // ✅ NOVO
+  experiencias: "Experiências"       // ✅ NOVO
+}
+
+// Em en:
+cats: { 
+  hoteis: "Hotels", comer: "Eat", bares: "Bars", lazer: "Leisure", 
+  golf: "Golf", lojas: "Shops", imobiliarias: "Property", util: "Useful",
+  transportes: "Transport",          // ✅ NOVO
+  experiencias: "Experiences"        // ✅ NOVO
+}
         };
 
         const CATEGORIAS = [
-          { id: 'hoteis', icon: 'fa-hotel' }, { id: 'comer', icon: 'fa-utensils' },
-          { id: 'bares', icon: 'fa-glass-cheers' }, { id: 'lazer', icon: 'fa-camera-retro' },
-          { id: 'golf', icon: 'fa-golf-ball-tee' }, { id: 'lojas', icon: 'fa-bag-shopping' },
-          { id: 'imobiliarias', icon: 'fa-house-chimney' }, { id: 'util', icon: 'fa-shield-halved' }
-        ];
-
+  { id: 'hoteis', icon: 'fa-hotel' }, 
+  { id: 'comer', icon: 'fa-utensils' },
+  { id: 'bares', icon: 'fa-glass-cheers' }, 
+  { id: 'lazer', icon: 'fa-camera-retro' },
+  { id: 'golf', icon: 'fa-golf-ball-tee' }, 
+  { id: 'lojas', icon: 'fa-bag-shopping' },
+  { id: 'imobiliarias', icon: 'fa-house-chimney' }, 
+  { id: 'util', icon: 'fa-shield-halved' },
+  { id: 'transportes', icon: 'fa-bus' },           // ✅ NOVO
+  { id: 'experiencias', icon: 'fa-ticket-alt' }    // ✅ NOVO
+];
         const getInfoText = (info, lang) => {
             if (!info) return '';
             if (typeof info === 'object' && info[lang]) return info[lang];
@@ -143,6 +313,8 @@
           const [locais, setLocais] = useState([]);
           const [loading, setLoading] = useState(true);
           const [error, setError] = useState(null);
+          const [dontShowAgain, setDontShowAgain] = useState(false);
+          const [selectedLang, setSelectedLang] = useState('pt');
           
           const mapRef = useRef(null);
           const googleMap = useRef(null);
@@ -152,18 +324,41 @@
           const t = i18n[lang] || i18n.en;
 
           useEffect(() => {
+            const savedLang = localStorage.getItem('vilamoura_lang');
+            if (savedLang) {
+                setLang(savedLang);
+                setSelectedLang(savedLang);
+            }
+          }, []);
+
+          const handleEnter = () => {
+            const hasSeenWelcome = localStorage.getItem('vilamoura_welcome_seen');
+            if (hasSeenWelcome) {
+                setView('menu');
+            } else {
+                setView('welcome');
+            }
+          };
+
+          const handleStart = () => {
+            if (dontShowAgain) {
+                localStorage.setItem('vilamoura_welcome_seen', 'true');
+            }
+            localStorage.setItem('vilamoura_lang', selectedLang);
+            setLang(selectedLang);
+            setView('menu');
+          };
+
+          useEffect(() => {
             if (view === 'menu') {
                 setLoading(true);
                 setError(null);
-                
                 db.collection('locais').get()
                     .then((snapshot) => {
                         const dados = snapshot.docs.map(doc => doc.data());
                         setLocais(dados);
                         setLoading(false);
-                        if (dados.length === 0) {
-                            setError('Nenhum negócio encontrado.');
-                        }
+                        if (dados.length === 0) setError('Nenhum negócio encontrado.');
                     })
                     .catch((err) => {
                         console.error("Erro Firestore:", err);
@@ -200,9 +395,7 @@
                         destination: { lat: parseFloat(lat), lng: parseFloat(lng) },
                         travelMode: google.maps.TravelMode.WALKING
                     }, (result, status) => {
-                        if (status === 'OK') {
-                            directionsRenderer.current.setDirections(result);
-                        }
+                        if (status === 'OK') directionsRenderer.current.setDirections(result);
                     });
                 });
             }
@@ -220,10 +413,8 @@
                     map: googleMap.current,
                     label: { text: loc.icon || '📍', color: 'white' }
                 });
-
                 const infoText = getInfoText(loc.info, lang);
                 const imgSrc = cleanImageUrl(loc.img);
-
                 const content = `
                     <div style="width:200px; padding:5px;">
                         ${imgSrc ? `<img src="${imgSrc}" style="width:100%; border-radius:8px; min-height:120px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/200x120?text=Sem+Foto'">` : ''}
@@ -236,12 +427,10 @@
                         </div>
                     </div>
                 `;
-
                 const iw = new google.maps.InfoWindow({ content });
                 marker.addListener('click', () => iw.open(googleMap.current, marker));
                 markers.current.push(marker);
             });
-
             if(!Array.isArray(items)) {
                 googleMap.current.setCenter({lat: items.lat, lng: items.lng});
                 googleMap.current.setZoom(17);
@@ -253,34 +442,49 @@
 
           const filtered = locais.filter(l => l.nome && l.nome.toLowerCase().includes(query.toLowerCase()));
 
-          // SPLASH SCREEN COM GIF
+          // ✅ SPLASH SCREEN
           if (view === 'splash') {
             return (
               <div className="splash-screen">
-                <div style={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    height: '100%',
-                    padding: '20px',
-                    boxSizing: 'border-box'
+                <img 
+                  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh2RRJgYenNf-1LjVFu47Lj4dmOnLy9PPAcXvXN2zLle3kx2vlEAQXtIs6_C6g9H-90RCQqjSj41N6ZfeDT35GG17m8VJ3-h4iC041wDTLKTZJ7QAs5511gf8OimILN-XyQlT4v3Brs7yWpQSqL_DuvLKJrLvacbYvb7y9VZFEOyZ6FVTwLtPFtI_Xt5nZG/w400-h225/Vilamoura-Select_YourIndependentGuidetoVilamoura_retangular_2-.gif" 
+                  alt="Vilamoura Select"
+                  style={{ 
+                    width: '95%',
+                    maxWidth: '420px',
+                    height: 'auto',
+                    marginBottom: '35px',
+                    display: 'block',
+                    borderRadius: '8px'
+                  }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  bottom: '40px',
+                  left: '0',
+                  right: '0',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  padding: '0 20px',
+                  zIndex: 20
                 }}>
-                  <img 
-                    src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTSSJtUisGMU4JhqyhpVOfijpUXIOrrAuQ_bTEPUOed5RSYPrUEfsU2Mnt2P3lqgw6j5vkQOBRsuM6uPZq-_ZZINo2tsZE9VDv0_riL5jOxAE4T008EF8bSILC5h4fgggpPd_B_O6LDv1ozVFh-3KDyUMypg20kd9YsUkc7w5Ngkmg3hDm6X69ZmS0SDIn/w395-h585/Vilamoura-Select_Your%20Independent%20Guide%20to%20Vilamoura_2_G.gif" 
-                    alt="Vilamoura Select"
-                    style={{ 
-                      maxWidth: '280px', 
-                      width: '70%', 
-                      height: 'auto', 
-                      marginBottom: '25px',
-                      display: 'block'
-                    }}
-                  />
                   <button 
-                    className="btn-explore" 
-                    style={{ width: '200px', background: '#003366' }} 
-                    onClick={() => setView('menu')}
+                    style={{
+                      width: '210px', 
+                      padding: '15px 24px',
+                      background: '#003366',
+                      color: '#ffffff',
+                      border: '2px solid #ffffff',
+                      borderRadius: '32px',
+                      fontWeight: 'bold',
+                      fontSize: '15px',
+                      cursor: 'pointer',
+                      boxShadow: '0 5px 15px rgba(0,0,0,0.25)',
+                      transition: 'transform 0.2s'
+                    }}
+                    onClick={handleEnter}
+                    onMouseOver={(e) => e.target.style.transform = 'scale(1.03)'}
+                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                   >
                     {t.enter}
                   </button>
@@ -289,6 +493,60 @@
             );
           }
 
+          // ✅ BOAS-VINDAS
+          if (view === 'welcome') {
+            return (
+              <div className="welcome-screen">
+                <div className="welcome-content">
+                  <div className="welcome-logo">
+                    <img src="icon-512.png" alt="Vilamoura Select" />
+                  </div>
+                  <h1 className="welcome-title">{i18n[selectedLang].welcome}</h1>
+                  <p className="welcome-text">{i18n[selectedLang].welcomeText}</p>
+                  
+                  <div style={{marginBottom: '25px'}}>
+                    <div className="lang-select-title">{i18n[selectedLang].selectLang}</div>
+                    <div className="lang-grid-flags">
+                      {languages.map(l => (
+                        <div 
+                          key={l.code}
+                          className={`lang-flag-option ${selectedLang === l.code ? 'selected' : ''}`}
+                          onClick={() => setSelectedLang(l.code)}
+                          title={l.name}
+                        >
+                          <img 
+                            src={l.flag} 
+                            alt={l.name}
+                            style={{ 
+                              width: '24px', 
+                              height: '16px', 
+                              objectFit: 'cover', 
+                              borderRadius: '2px'
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <button className="welcome-btn" onClick={handleStart}>
+                    {i18n[selectedLang].start}
+                  </button>
+                  
+                  <label className="welcome-checkbox">
+                    <input 
+                      type="checkbox" 
+                      checked={dontShowAgain}
+                      onChange={(e) => setDontShowAgain(e.target.checked)}
+                    />
+                    {i18n[selectedLang].dontShowAgain}
+                  </label>
+                </div>
+              </div>
+            );
+          }
+
+          // ✅ APP PRINCIPAL
           return (
             <div style={{height: '100%'}}>
               <div className="lang-bar">
@@ -304,9 +562,7 @@
                             <input type="text" placeholder={t.search} value={query} onChange={(e) => {setQuery(e.target.value); if(subView !== 'grid') setSubView('grid');}} />
                         </div>
                     </div>
-                    
                     {error && <div className="error-msg">⚠️ {error}</div>}
-                    
                     {loading ? (
                         <div className="loader"><i className="fas fa-spinner fa-spin"></i> {t.loading}</div>
                     ) : query.length > 0 ? (
@@ -340,7 +596,6 @@
                         <div>
                             <div style={{ padding: '15px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                                 <button onClick={() => setSubView('grid')} style={{ padding: '10px 15px', background: 'none', border: 'none', color: '#003366', fontWeight: 'bold', cursor: 'pointer' }}>← {t.back}</button>
-                                <button onClick={() => openMap(locais)} style={{ padding: '10px 20px', background: '#27ae60', color: 'white', border: 'none', borderRadius: '25px', fontWeight: 'bold', cursor: 'pointer', fontSize: '12px' }}>{t.explore}</button>
                             </div>
                             {locais.filter(l => l.cat === catAtiva).map(l => (
                                 <div key={l.id || l.nome} className="item-row" onClick={() => openMap(l)}>
@@ -364,6 +619,16 @@
         }
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('✅ Service Worker registado!', reg))
+            .catch(err => console.log('❌ Erro no Service Worker:', err));
+        });
+      }
+    </script>
 </body>
 </html>
-

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Importar Dados - Vilamoura Select</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f7f9; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #003366; }
+        .btn { padding: 12px 24px; background: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        .btn:hover { background: #004080; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .category { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .category h2 { color: #003366; margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📥 Importar Dados para Firebase</h1>
+        <p>Clique nos botões abaixo para importar os dados das novas categorias:</p>
+        
+        <div id="messages"></div>
+        
+        <div class="category">
+            <h2>🚗 Transportes</h2>
+            <button class="btn" onclick="importTransportes()">Importar Transportes (4 negócios)</button>
+        </div>
+        
+        <div class="category">
+            <h2>🎯 Experiências & Atividades</h2>
+            <button class="btn" onclick="importExperiencias()">Importar Experiências (8 negócios)</button>
+        </div>
+        
+        <div class="category">
+            <h2>📊 Verificar Dados</h2>
+            <button class="btn" onclick="checkData()">Verificar Coleção 'locais'</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuração Firebase (SUBSTITUA PELOS SEUS DADOS)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfUDqEJxVnWbQgn6LEVQAjlKeBJdp0vyY",
+            authDomain: "vilamoura-select.firebaseapp.com",
+            projectId: "vilamoura-select",
+            storageBucket: "vilamoura-select.firebasestorage.app",
+            messagingSenderId: "189990454398",
+            appId: "1:189990454398:web:3d9eac9cf3a84b0510c42f"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // DADOS TRANSPORTES
+        const transportes = [
+            {
+                nome: "Vilamoura Taxi",
+                cat: "transportes",
+                icon: "🚖",
+                info: { pt: "Táxis e transfers aeroporto 24h. Serviço profissional e pontual.", en: "Taxis and airport transfers 24h. Professional and punctual service." },
+                tel: "+351932451496",
+                web: "https://vilamourataxi.com",
+                lat: 37.0760,
+                lng: -8.1180,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Vilamoura+Taxi"
+            },
+            {
+                nome: "Taxis Vilamoura",
+                cat: "transportes",
+                icon: "🚕",
+                info: { pt: "Serviço de táxis local. Disponível 24 horas.", en: "Local taxi service. Available 24 hours." },
+                tel: "+351915688249",
+                web: "https://taxisvilamoura.com",
+                lat: 37.0765,
+                lng: -8.1175,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Taxis+Vilamoura"
+            },
+            {
+                nome: "EVA Transportes",
+                cat: "transportes",
+                icon: "🚌",
+                info: { pt: "Autocarros para Faro, Albufeira e Loulé. Horários regulares.", en: "Buses to Faro, Albufeira and Loulé. Regular schedules." },
+                tel: "+351289389143",
+                web: "https://eva-bus.com",
+                lat: 37.0770,
+                lng: -8.1170,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=EVA+Bus"
+            },
+            {
+                nome: "Faro Airport Transfers",
+                cat: "transportes",
+                icon: "🚐",
+                info: { pt: "Transfers privados aeroporto. Até 4 pessoas, 30€.", en: "Private airport transfers. Up to 4 people, €30." },
+                tel: "",
+                web: "https://faro-airport-taxis.com",
+                lat: 37.0755,
+                lng: -8.1185,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Airport+Transfer"
+            }
+        ];
+
+        // DADOS EXPERIÊNCIAS
+        const experiencias = [
+            {
+                nome: "Algarve Cave Tours",
+                cat: "experiencias",
+                icon: "🚤",
+                info: { pt: "Passeios de barco às grutas de Benagil. Observação de golfinhos.", en: "Boat tours to Benagil caves. Dolphin watching." },
+                tel: "",
+                web: "https://algarvecavetours.com",
+                lat: 37.0750,
+                lng: -8.1190,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Cave+Tours"
+            },
+            {
+                nome: "Watersports Centre",
+                cat: "experiencias",
+                icon: "🏄",
+                info: { pt: "Jet ski, parasailing, passeios de barco. Jet ski: 75€/30min.", en: "Jet ski, parasailing, boat trips. Jet ski: €75/30min." },
+                tel: "",
+                web: "https://watersportsalgarve.com",
+                lat: 37.0745,
+                lng: -8.1195,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Watersports"
+            },
+            {
+                nome: "Dreams Cruises",
+                cat: "experiencias",
+                icon: "⛵",
+                info: { pt: "Passeios de barco, paddle board, snorkeling. Sunset cruises.", en: "Boat trips, paddle board, snorkeling. Sunset cruises." },
+                tel: "",
+                web: "https://vilamouradreamscruises.com",
+                lat: 37.0740,
+                lng: -8.1200,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Dreams+Cruises"
+            },
+            {
+                nome: "Baja Bikes",
+                cat: "experiencias",
+                icon: "🚲",
+                info: { pt: "Aluguer de bicicletas. 20€/dia. Tours guiados disponíveis.", en: "Bike rental. €20/day. Guided tours available." },
+                tel: "",
+                web: "https://bajabikes.eu",
+                lat: 37.0775,
+                lng: -8.1165,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Baja+Bikes"
+            },
+            {
+                nome: "Bike-a-Wish",
+                cat: "experiencias",
+                icon: "🚴",
+                info: { pt: "Tours de bicicleta e aluguer. Explore Vilamoura de forma ecológica.", en: "Bike tours and rental. Explore Vilamoura in an eco-friendly way." },
+                tel: "",
+                web: "https://bikeawish.com",
+                lat: 37.0780,
+                lng: -8.1160,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Bike-a-Wish"
+            },
+            {
+                nome: "Avalanche Algarve",
+                cat: "experiencias",
+                icon: "🚵",
+                info: { pt: "Aluguer de bicicletas mountain bike. 15€/dia.", en: "Mountain bike rental. €15/day." },
+                tel: "",
+                web: "https://avalanchealgarve.com",
+                lat: 37.0785,
+                lng: -8.1155,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Avalanche"
+            },
+            {
+                nome: "Vilamoura Fishing",
+                cat: "experiencias",
+                icon: "🎣",
+                info: { pt: "Pesca desportiva. Family reef fishing e big game fishing.", en: "Sport fishing. Family reef fishing and big game fishing." },
+                tel: "",
+                web: "",
+                lat: 37.0735,
+                lng: -8.1205,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Fishing"
+            },
+            {
+                nome: "Centro Hípico",
+                cat: "experiencias",
+                icon: "🏇",
+                info: { pt: "Atividades equestres. Passeios a cavalo pela marina.", en: "Equestrian activities. Horse riding tours around the marina." },
+                tel: "",
+                web: "",
+                lat: 37.0790,
+                lng: -8.1150,
+                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Equestrian"
+            }
+        ];
+
+        function showMessage(text, isError = false) {
+            const div = document.createElement('div');
+            div.className = isError ? 'error' : 'success';
+            div.textContent = text;
+            document.getElementById('messages').appendChild(div);
+            setTimeout(() => div.remove(), 5000);
+        }
+
+        async function importTransportes() {
+            try {
+                let count = 0;
+                for (const item of transportes) {
+                    await db.collection('locais').add(item);
+                    count++;
+                }
+                showMessage(`✅ ${count} negócios de Transportes importados com sucesso!`);
+            } catch (error) {
+                showMessage(`❌ Erro ao importar: ${error.message}`, true);
+            }
+        }
+
+        async function importExperiencias() {
+            try {
+                let count = 0;
+                for (const item of experiencias) {
+                    await db.collection('locais').add(item);
+                    count++;
+                }
+                showMessage(`✅ ${count} negócios de Experiências importados com sucesso!`);
+            } catch (error) {
+                showMessage(`❌ Erro ao importar: ${error.message}`, true);
+            }
+        }
+
+        async function checkData() {
+            try {
+                const snapshot = await db.collection('locais').get();
+                const transportes = snapshot.docs.filter(d => d.data().cat === 'transportes').length;
+                const experiencias = snapshot.docs.filter(d => d.data().cat === 'experiencias').length;
+                const total = snapshot.size;
+                
+                showMessage(`📊 Total: ${total} negócios | Transportes: ${transportes} | Experiências: ${experiencias}`);
+            } catch (error) {
+                showMessage(`❌ Erro ao verificar: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>
