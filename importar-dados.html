@@ -15,33 +15,39 @@
         .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
         .category { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; }
         .category h2 { color: #003366; margin-top: 0; }
+        .note { font-size: 12px; color: #666; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📥 Importar Dados para Firebase</h1>
-        <p>Clique nos botões abaixo para importar os dados das novas categorias:</p>
+        <p class="note">Nota: As imagens usam placeholders. Pode substituir por fotos reais depois.</p>
         
         <div id="messages"></div>
         
         <div class="category">
-            <h2>🚗 Transportes</h2>
-            <button class="btn" onclick="importTransportes()">Importar Transportes (4 negócios)</button>
+            <h2>🚗 Transportes (4 negócios)</h2>
+            <button class="btn" onclick="importTransportes()">Importar Transportes</button>
         </div>
         
         <div class="category">
-            <h2>🎯 Experiências & Atividades</h2>
-            <button class="btn" onclick="importExperiencias()">Importar Experiências (8 negócios)</button>
+            <h2>🎯 Experiências & Atividades (8 negócios)</h2>
+            <button class="btn" onclick="importExperiencias()">Importar Experiências</button>
         </div>
         
         <div class="category">
             <h2>📊 Verificar Dados</h2>
             <button class="btn" onclick="checkData()">Verificar Coleção 'locais'</button>
         </div>
+        
+        <div class="category">
+            <h2>🗑️ Limpar Duplicados (Opcional)</h2>
+            <button class="btn" style="background:#dc3545;" onclick="cleanDuplicates()">Remover Duplicados</button>
+            <p class="note">Remove negócios duplicados por nome nas novas categorias.</p>
+        </div>
     </div>
 
     <script>
-        // Configuração Firebase (SUBSTITUA PELOS SEUS DADOS)
         const firebaseConfig = {
             apiKey: "AIzaSyDfUDqEJxVnWbQgn6LEVQAjlKeBJdp0vyY",
             authDomain: "vilamoura-select.firebaseapp.com",
@@ -51,22 +57,25 @@
             appId: "1:189990454398:web:3d9eac9cf3a84b0510c42f"
         };
 
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // DADOS TRANSPORTES
+        // Placeholder image generator (sem espaços = sem erros)
+        const placeholder = (text) => 
+            `https://via.placeholder.com/400x300/003366/ffffff?text=${encodeURIComponent(text)}`;
+
+        // 🚗 TRANSPORTES - 4 negócios únicos
         const transportes = [
             {
                 nome: "Vilamoura Taxi",
                 cat: "transportes",
                 icon: "🚖",
-                info: { pt: "Táxis e transfers aeroporto 24h. Serviço profissional e pontual.", en: "Taxis and airport transfers 24h. Professional and punctual service." },
+                info: { pt: "Táxis e transfers aeroporto 24h. Serviço profissional.", en: "Taxis and airport transfers 24h. Professional service." },
                 tel: "+351932451496",
                 web: "https://vilamourataxi.com",
                 lat: 37.0760,
                 lng: -8.1180,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Vilamoura+Taxi"
+                img: placeholder("Vilamoura-Taxi")
             },
             {
                 nome: "Taxis Vilamoura",
@@ -77,121 +86,121 @@
                 web: "https://taxisvilamoura.com",
                 lat: 37.0765,
                 lng: -8.1175,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Taxis+Vilamoura"
+                img: placeholder("Taxis-Vilamoura")
             },
             {
                 nome: "EVA Transportes",
                 cat: "transportes",
                 icon: "🚌",
-                info: { pt: "Autocarros para Faro, Albufeira e Loulé. Horários regulares.", en: "Buses to Faro, Albufeira and Loulé. Regular schedules." },
+                info: { pt: "Autocarros para Faro, Albufeira e Loulé.", en: "Buses to Faro, Albufeira and Loulé." },
                 tel: "+351289389143",
                 web: "https://eva-bus.com",
                 lat: 37.0770,
                 lng: -8.1170,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=EVA+Bus"
+                img: placeholder("EVA-Transportes")
             },
             {
                 nome: "Faro Airport Transfers",
                 cat: "transportes",
                 icon: "🚐",
-                info: { pt: "Transfers privados aeroporto. Até 4 pessoas, 30€.", en: "Private airport transfers. Up to 4 people, €30." },
+                info: { pt: "Transfers privados aeroporto. Até 4 pessoas.", en: "Private airport transfers. Up to 4 people." },
                 tel: "",
                 web: "https://faro-airport-taxis.com",
                 lat: 37.0755,
                 lng: -8.1185,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Airport+Transfer"
+                img: placeholder("Airport-Transfers")
             }
         ];
 
-        // DADOS EXPERIÊNCIAS
+        // 🎯 EXPERIÊNCIAS - 8 negócios únicos (SEM golf courses)
         const experiencias = [
             {
                 nome: "Algarve Cave Tours",
                 cat: "experiencias",
                 icon: "🚤",
-                info: { pt: "Passeios de barco às grutas de Benagil. Observação de golfinhos.", en: "Boat tours to Benagil caves. Dolphin watching." },
+                info: { pt: "Passeios de barco às grutas de Benagil.", en: "Boat tours to Benagil caves." },
                 tel: "",
                 web: "https://algarvecavetours.com",
                 lat: 37.0750,
                 lng: -8.1190,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Cave+Tours"
+                img: placeholder("Cave-Tours")
             },
             {
-                nome: "Watersports Centre",
+                nome: "Vilamoura Watersports",
                 cat: "experiencias",
                 icon: "🏄",
-                info: { pt: "Jet ski, parasailing, passeios de barco. Jet ski: 75€/30min.", en: "Jet ski, parasailing, boat trips. Jet ski: €75/30min." },
+                info: { pt: "Jet ski, parasailing, passeios de barco.", en: "Jet ski, parasailing, boat trips." },
                 tel: "",
                 web: "https://watersportsalgarve.com",
                 lat: 37.0745,
                 lng: -8.1195,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Watersports"
+                img: placeholder("Watersports")
             },
             {
                 nome: "Dreams Cruises",
                 cat: "experiencias",
                 icon: "⛵",
-                info: { pt: "Passeios de barco, paddle board, snorkeling. Sunset cruises.", en: "Boat trips, paddle board, snorkeling. Sunset cruises." },
+                info: { pt: "Passeios de barco, paddle board, snorkeling.", en: "Boat trips, paddle board, snorkeling." },
                 tel: "",
                 web: "https://vilamouradreamscruises.com",
                 lat: 37.0740,
                 lng: -8.1200,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Dreams+Cruises"
+                img: placeholder("Dreams-Cruises")
             },
             {
-                nome: "Baja Bikes",
+                nome: "Baja Bikes Vilamoura",
                 cat: "experiencias",
                 icon: "🚲",
-                info: { pt: "Aluguer de bicicletas. 20€/dia. Tours guiados disponíveis.", en: "Bike rental. €20/day. Guided tours available." },
+                info: { pt: "Aluguer de bicicletas. 20€/dia.", en: "Bike rental. €20/day." },
                 tel: "",
                 web: "https://bajabikes.eu",
                 lat: 37.0775,
                 lng: -8.1165,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Baja+Bikes"
+                img: placeholder("Baja-Bikes")
             },
             {
-                nome: "Bike-a-Wish",
+                nome: "Bike-a-Wish Tours",
                 cat: "experiencias",
                 icon: "🚴",
-                info: { pt: "Tours de bicicleta e aluguer. Explore Vilamoura de forma ecológica.", en: "Bike tours and rental. Explore Vilamoura in an eco-friendly way." },
+                info: { pt: "Tours de bicicleta e aluguer ecológico.", en: "Eco-friendly bike tours and rental." },
                 tel: "",
                 web: "https://bikeawish.com",
                 lat: 37.0780,
                 lng: -8.1160,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Bike-a-Wish"
+                img: placeholder("Bike-a-Wish")
             },
             {
-                nome: "Avalanche Algarve",
+                nome: "Avalanche Bikes",
                 cat: "experiencias",
                 icon: "🚵",
-                info: { pt: "Aluguer de bicicletas mountain bike. 15€/dia.", en: "Mountain bike rental. €15/day." },
+                info: { pt: "Aluguer de mountain bikes. 15€/dia.", en: "Mountain bike rental. €15/day." },
                 tel: "",
                 web: "https://avalanchealgarve.com",
                 lat: 37.0785,
                 lng: -8.1155,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Avalanche"
+                img: placeholder("Avalanche-Bikes")
             },
             {
                 nome: "Vilamoura Fishing",
                 cat: "experiencias",
                 icon: "🎣",
-                info: { pt: "Pesca desportiva. Family reef fishing e big game fishing.", en: "Sport fishing. Family reef fishing and big game fishing." },
+                info: { pt: "Pesca desportiva. Reef e big game fishing.", en: "Sport fishing. Reef and big game fishing." },
                 tel: "",
                 web: "",
                 lat: 37.0735,
                 lng: -8.1205,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Fishing"
+                img: placeholder("Fishing")
             },
             {
-                nome: "Centro Hípico",
+                nome: "Centro Hípico Vilamoura",
                 cat: "experiencias",
                 icon: "🏇",
-                info: { pt: "Atividades equestres. Passeios a cavalo pela marina.", en: "Equestrian activities. Horse riding tours around the marina." },
+                info: { pt: "Atividades equestres. Passeios a cavalo.", en: "Equestrian activities. Horse riding tours." },
                 tel: "",
                 web: "",
                 lat: 37.0790,
                 lng: -8.1150,
-                img: "https://via.placeholder.com/400x300/003366/ffffff?text=Equestrian"
+                img: placeholder("Equestrian")
             }
         ];
 
@@ -200,7 +209,7 @@
             div.className = isError ? 'error' : 'success';
             div.textContent = text;
             document.getElementById('messages').appendChild(div);
-            setTimeout(() => div.remove(), 5000);
+            setTimeout(() => div.remove(), 6000);
         }
 
         async function importTransportes() {
@@ -210,9 +219,9 @@
                     await db.collection('locais').add(item);
                     count++;
                 }
-                showMessage(`✅ ${count} negócios de Transportes importados com sucesso!`);
+                showMessage(`✅ ${count} negócios de Transportes importados!`);
             } catch (error) {
-                showMessage(`❌ Erro ao importar: ${error.message}`, true);
+                showMessage(`❌ Erro: ${error.message}`, true);
             }
         }
 
@@ -223,9 +232,9 @@
                     await db.collection('locais').add(item);
                     count++;
                 }
-                showMessage(`✅ ${count} negócios de Experiências importados com sucesso!`);
+                showMessage(`✅ ${count} negócios de Experiências importados!`);
             } catch (error) {
-                showMessage(`❌ Erro ao importar: ${error.message}`, true);
+                showMessage(`❌ Erro: ${error.message}`, true);
             }
         }
 
@@ -235,10 +244,36 @@
                 const transportes = snapshot.docs.filter(d => d.data().cat === 'transportes').length;
                 const experiencias = snapshot.docs.filter(d => d.data().cat === 'experiencias').length;
                 const total = snapshot.size;
-                
-                showMessage(`📊 Total: ${total} negócios | Transportes: ${transportes} | Experiências: ${experiencias}`);
+                showMessage(`📊 Total: ${total} | Transportes: ${transportes} | Experiências: ${experiencias}`);
             } catch (error) {
-                showMessage(`❌ Erro ao verificar: ${error.message}`, true);
+                showMessage(`❌ Erro: ${error.message}`, true);
+            }
+        }
+
+        async function cleanDuplicates() {
+            try {
+                const snapshot = await db.collection('locais').get();
+                const names = {};
+                let deleted = 0;
+                
+                for (const doc of snapshot.docs) {
+                    const data = doc.data();
+                    const cat = data.cat;
+                    const nome = data.nome;
+                    
+                    if (cat === 'transportes' || cat === 'experiencias') {
+                        const key = `${cat}-${nome}`;
+                        if (names[key]) {
+                            await doc.ref.delete();
+                            deleted++;
+                        } else {
+                            names[key] = true;
+                        }
+                    }
+                }
+                showMessage(deleted > 0 ? `🗑️ ${deleted} duplicados removidos!` : '✅ Sem duplicados encontrados.');
+            } catch (error) {
+                showMessage(`❌ Erro: ${error.message}`, true);
             }
         }
     </script>
