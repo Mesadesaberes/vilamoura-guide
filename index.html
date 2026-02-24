@@ -257,40 +257,156 @@
         ];
 
         const i18n = {
-          pt: { enter: "ENTRAR", search: "Procurar...", back: "VOLTAR", route: "CALCULAR ROTA", call: "LIGAR", visit: "WEBSITE", explore: "📍 EXPLORAR TUDO", loading: "A carregar...", welcome: "Bem-vindo", welcomeText: "O seu guia independente para descobrir o melhor de Vilamoura. Selecione o seu idioma para começar.", selectLang: "Idioma", start: "COMEÇAR", dontShowAgain: "Não mostrar novamente", cats: { hoteis: "Hotéis", comer: "Comer", bares: "Bares", lazer: "Lazer", golf: "Golf", lojas: "Lojas", imobiliarias: "Imóveis", util: "Útil" } },
-          en: { enter: "ENTER", search: "Search...", back: "BACK", route: "GET ROUTE", call: "CALL", visit: "WEBSITE", explore: "📍 EXPLORE ALL", loading: "Loading...", welcome: "Welcome", welcomeText: "Your independent guide to discover the best of Vilamoura. Select your language to begin.", selectLang: "Language", start: "GET STARTED", dontShowAgain: "Don't show again", cats: { hoteis: "Hotels", comer: "Eat", bares: "Bars", lazer: "Leisure", golf: "Golf", lojas: "Shops", imobiliarias: "Property", util: "Useful" } },
-          fr: { enter: "ENTRER", search: "Chercher...", back: "RETOUR", route: "ITINÉRAIRE", call: "APPELER", visit: "SITE WEB", explore: "📍 TOUT VOIR", loading: "Chargement...", welcome: "Bienvenue", welcomeText: "Votre guide indépendant pour découvrir le meilleur de Vilamoura. Sélectionnez votre langue pour commencer.", selectLang: "Langue", start: "COMMENCER", dontShowAgain: "Ne plus afficher", cats: { hoteis: "Hôtels", comer: "Manger", bares: "Bars", lazer: "Loisirs", golf: "Golf", lojas: "Boutiques", imobiliarias: "Immo", util: "Utile" } },
-          de: { enter: "EINTRETEN", search: "Suche...", back: "ZURÜCK", route: "ROUTE BERECHNEN", call: "ANRUFEN", visit: "WEBSEITE", explore: "📍 ALLES SEHEN", loading: "Laden...", welcome: "Willkommen", welcomeText: "Ihr unabhängiger Reiseführer, um das Beste von Vilamoura zu entdecken. Wählen Sie Ihre Sprache.", selectLang: "Sprache", start: "STARTEN", dontShowAgain: "Nicht wieder anzeigen", cats: { hoteis: "Hotels", comer: "Essen", bares: "Bars", lazer: "Freizeit", golf: "Golf", lojas: "Läden", imobiliarias: "Immo", util: "Nützlich" } },
-          es: { enter: "ENTRAR", search: "Buscar...", back: "VOLVER", route: "CALCULAR RUTA", call: "LLAMAR", visit: "SITIO WEB", explore: "📍 EXPLORAR TODO", loading: "Cargando...", welcome: "Bienvenido", welcomeText: "Tu guía independiente para descubrir lo mejor de Vilamoura. Selecciona tu idioma para comenzar.", selectLang: "Idioma", start: "COMENZAR", dontShowAgain: "No mostrar de nuevo", cats: { hoteis: "Hoteles", comer: "Comer", bares: "Bares", lazer: "Ocio", golf: "Golf", lojas: "Tiendas", imobiliarias: "Inmuebles", util: "Útil" } }
-          // Em pt:
-cats: { 
-  hoteis: "Hotéis", comer: "Comer", bares: "Bares", lazer: "Lazer", 
-  golf: "Golf", lojas: "Lojas", imobiliarias: "Imóveis", util: "Útil",
-  transportes: "Transportes",        // ✅ NOVO
-  experiencias: "Experiências"       // ✅ NOVO
-}
-
-// Em en:
-cats: { 
-  hoteis: "Hotels", comer: "Eat", bares: "Bars", lazer: "Leisure", 
-  golf: "Golf", lojas: "Shops", imobiliarias: "Property", util: "Useful",
-  transportes: "Transport",          // ✅ NOVO
-  experiencias: "Experiences"        // ✅ NOVO
-}
+          pt: { 
+            enter: "ENTRAR", 
+            search: "Procurar...", 
+            back: "VOLTAR", 
+            route: "CALCULAR ROTA", 
+            call: "LIGAR", 
+            visit: "WEBSITE", 
+            explore: "📍 EXPLORAR TUDO", 
+            loading: "A carregar...", 
+            welcome: "Bem-vindo", 
+            welcomeText: "O seu guia independente para descobrir o melhor de Vilamoura. Selecione o seu idioma para começar.", 
+            selectLang: "Idioma", 
+            start: "COMEÇAR", 
+            dontShowAgain: "Não mostrar novamente", 
+            cats: { 
+              hoteis: "Hotéis", 
+              comer: "Comer", 
+              bares: "Bares", 
+              lazer: "Lazer", 
+              golf: "Golf", 
+              lojas: "Lojas", 
+              imobiliarias: "Imóveis", 
+              util: "Útil",
+              transportes: "Transportes",
+              experiencias: "Experiências"
+            } 
+          },
+          en: { 
+            enter: "ENTER", 
+            search: "Search...", 
+            back: "BACK", 
+            route: "GET ROUTE", 
+            call: "CALL", 
+            visit: "WEBSITE", 
+            explore: "📍 EXPLORE ALL", 
+            loading: "Loading...", 
+            welcome: "Welcome", 
+            welcomeText: "Your independent guide to discover the best of Vilamoura. Select your language to begin.", 
+            selectLang: "Language", 
+            start: "GET STARTED", 
+            dontShowAgain: "Don't show again", 
+            cats: { 
+              hoteis: "Hotels", 
+              comer: "Eat", 
+              bares: "Bars", 
+              lazer: "Leisure", 
+              golf: "Golf", 
+              lojas: "Shops", 
+              imobiliarias: "Property", 
+              util: "Useful",
+              transportes: "Transport",
+              experiencias: "Experiences"
+            } 
+          },
+          fr: { 
+            enter: "ENTRER", 
+            search: "Chercher...", 
+            back: "RETOUR", 
+            route: "ITINÉRAIRE", 
+            call: "APPELER", 
+            visit: "SITE WEB", 
+            explore: "📍 TOUT VOIR", 
+            loading: "Chargement...", 
+            welcome: "Bienvenue", 
+            welcomeText: "Votre guide indépendant pour découvrir le meilleur de Vilamoura. Sélectionnez votre langue pour commencer.", 
+            selectLang: "Langue", 
+            start: "COMMENCER", 
+            dontShowAgain: "Ne plus afficher", 
+            cats: { 
+              hoteis: "Hôtels", 
+              comer: "Manger", 
+              bares: "Bars", 
+              lazer: "Loisirs", 
+              golf: "Golf", 
+              lojas: "Boutiques", 
+              imobiliarias: "Immo", 
+              util: "Utile",
+              transportes: "Transports",
+              experiencias: "Expériences"
+            } 
+          },
+          de: { 
+            enter: "EINTRETEN", 
+            search: "Suche...", 
+            back: "ZURÜCK", 
+            route: "ROUTE BERECHNEN", 
+            call: "ANRUFEN", 
+            visit: "WEBSEITE", 
+            explore: "📍 ALLES SEHEN", 
+            loading: "Laden...", 
+            welcome: "Willkommen", 
+            welcomeText: "Ihr unabhängiger Reiseführer, um das Beste von Vilamoura zu entdecken. Wählen Sie Ihre Sprache.", 
+            selectLang: "Sprache", 
+            start: "STARTEN", 
+            dontShowAgain: "Nicht wieder anzeigen", 
+            cats: { 
+              hoteis: "Hotels", 
+              comer: "Essen", 
+              bares: "Bars", 
+              lazer: "Freizeit", 
+              golf: "Golf", 
+              lojas: "Läden", 
+              imobiliarias: "Immo", 
+              util: "Nützlich",
+              transportes: "Transport",
+              experiencias: "Erlebnisse"
+            } 
+          },
+          es: { 
+            enter: "ENTRAR", 
+            search: "Buscar...", 
+            back: "VOLVER", 
+            route: "CALCULAR RUTA", 
+            call: "LLAMAR", 
+            visit: "SITIO WEB", 
+            explore: "📍 EXPLORAR TODO", 
+            loading: "Cargando...", 
+            welcome: "Bienvenido", 
+            welcomeText: "Tu guía independiente para descubrir lo mejor de Vilamoura. Selecciona tu idioma para comenzar.", 
+            selectLang: "Idioma", 
+            start: "COMENZAR", 
+            dontShowAgain: "No mostrar de nuevo", 
+            cats: { 
+              hoteis: "Hoteles", 
+              comer: "Comer", 
+              bares: "Bares", 
+              lazer: "Ocio", 
+              golf: "Golf", 
+              lojas: "Tiendas", 
+              imobiliarias: "Inmuebles", 
+              util: "Útil",
+              transportes: "Transporte",
+              experiencias: "Experiencias"
+            } 
+          }
         };
 
         const CATEGORIAS = [
-  { id: 'hoteis', icon: 'fa-hotel' }, 
-  { id: 'comer', icon: 'fa-utensils' },
-  { id: 'bares', icon: 'fa-glass-cheers' }, 
-  { id: 'lazer', icon: 'fa-camera-retro' },
-  { id: 'golf', icon: 'fa-golf-ball-tee' }, 
-  { id: 'lojas', icon: 'fa-bag-shopping' },
-  { id: 'imobiliarias', icon: 'fa-house-chimney' }, 
-  { id: 'util', icon: 'fa-shield-halved' },
-  { id: 'transportes', icon: 'fa-bus' },           // ✅ NOVO
-  { id: 'experiencias', icon: 'fa-ticket-alt' }    // ✅ NOVO
-];
+          { id: 'hoteis', icon: 'fa-hotel' }, 
+          { id: 'comer', icon: 'fa-utensils' },
+          { id: 'bares', icon: 'fa-glass-cheers' }, 
+          { id: 'lazer', icon: 'fa-camera-retro' },
+          { id: 'golf', icon: 'fa-golf-ball-tee' }, 
+          { id: 'lojas', icon: 'fa-bag-shopping' },
+          { id: 'imobiliarias', icon: 'fa-house-chimney' }, 
+          { id: 'util', icon: 'fa-shield-halved' },
+          { id: 'transportes', icon: 'fa-bus' },
+          { id: 'experiencias', icon: 'fa-ticket-alt' }
+        ];
+
         const getInfoText = (info, lang) => {
             if (!info) return '';
             if (typeof info === 'object' && info[lang]) return info[lang];
