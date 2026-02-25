@@ -13,24 +13,35 @@
         .btn:hover { background: #004080; }
         .btn-danger { background: #dc3545; }
         .btn-danger:hover { background: #c82333; }
+        .btn-warning { background: #ffc107; color: #000; }
+        .btn-warning:hover { background: #e0a800; }
         .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
         .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .info { background: #cce5ff; color: #004085; padding: 10px; border-radius: 5px; margin: 10px 0; }
         .category { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366; }
         .category h2 { color: #003366; margin-top: 0; }
         .business-list { font-size: 13px; margin: 10px 0; padding-left: 20px; }
         .business-list li { margin: 5px 0; }
+        .debug-output { background: #f1f1f1; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; margin: 10px 0; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📥 Importar Dados para Firebase</h1>
-        <p><strong>Nota:</strong> Este script usa as fotos reais que forneceu.</p>
+        <p><strong>Nota:</strong> Este script usa as fotos reais que forneceu e remove duplicados com matching flexível.</p>
         
         <div id="messages"></div>
+        <div id="debug" class="debug-output" style="display:none;"></div>
         
         <div class="category">
-            <h2>🗑️ 1º PASSO: Remover Duplicados</h2>
-            <p>Estes negócios serão <strong>apagados</strong> do Firebase:</p>
+            <h2>🔍 Debug: Ver Nomes Existentes</h2>
+            <p>Mostra todos os negócios das categorias novas para confirmar duplicados:</p>
+            <button class="btn btn-warning" onclick="showExistingNames()">🔍 Mostrar Nomes Existentes</button>
+        </div>
+        
+        <div class="category">
+            <h2>🗑️ Remover Duplicados (Matching Flexível)</h2>
+            <p>Estes nomes serão procurados (ignora maiúsculas/minúsculas e espaços):</p>
             <ul class="business-list">
                 <li>❌ Vilamoura Taxi</li>
                 <li>❌ Centro Hípico</li>
@@ -43,7 +54,7 @@
         </div>
         
         <div class="category">
-            <h2>🚗 2º PASSO: Importar Transportes (3 negócios com fotos)</h2>
+            <h2>🚗 Importar Transportes (3 negócios com fotos)</h2>
             <ul class="business-list">
                 <li>✅ Taxis Vilamoura</li>
                 <li>✅ EVA Transportes</li>
@@ -53,7 +64,7 @@
         </div>
         
         <div class="category">
-            <h2>🎯 3º PASSO: Importar Experiências (8 negócios com fotos)</h2>
+            <h2>🎯 Importar Experiências (8 negócios com fotos)</h2>
             <ul class="business-list">
                 <li>✅ Algarve Cave Tours</li>
                 <li>✅ Watersports Centre</li>
@@ -84,6 +95,16 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+
+        // Nomes a remover (para matching flexível)
+        const namesToDelete = [
+            'vilamoura taxi',
+            'centro hípico',
+            'baja bikes vilamoura',
+            'avalanche algarve',
+            'bike-a-wish tours',
+            'vilamoura watersports'
+        ].map(n => n.trim().toLowerCase());
 
         // 🚗 TRANSPORTES - Com as suas fotos
         const transportes = [
@@ -178,29 +199,73 @@
             setTimeout(() => div.remove(), 8000);
         }
 
-        // 🔴 FUNÇÃO PARA REMOVER DUPLICADOS
+        function showDebug(text) {
+            const debug = document.getElementById('debug');
+            debug.style.display = 'block';
+            debug.textContent += text + '\n';
+            debug.scrollTop = debug.scrollHeight;
+        }
+
+        // 🔍 FUNÇÃO PARA MOSTRAR NOMES EXISTENTES (DEBUG)
+        async function showExistingNames() {
+            try {
+                showDebug('🔍 A procurar nomes existentes...');
+                const snapshot = await db.collection('locais').get();
+                const newCats = ['transportes', 'experiencias'];
+                const found = [];
+                
+                snapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    if (newCats.includes(data.cat)) {
+                        found.push(`• "${data.nome}" (cat: ${data.cat}, ID: ${doc.id})`);
+                    }
+                });
+                
+                if (found.length === 0) {
+                    showDebug('⚠️ Nenhum negócio encontrado nas categorias novas.');
+                } else {
+                    showDebug('📋 Nomes encontrados:\n' + found.join('\n'));
+                }
+                showMessage(`🔍 Encontrados ${found.length} negócios nas categorias novas.`);
+            } catch (error) {
+                showMessage(`❌ Erro: ${error.message}`, true);
+                showDebug('Erro: ' + error.message);
+            }
+        }
+
+        // 🗑️ FUNÇÃO PARA REMOVER DUPLICADOS (MATCHING FLEXÍVEL)
         async function cleanDuplicates() {
-            if(!confirm("Tem a certeza? Isto vai APAGAR permanentemente os negócios duplicados.")) return;
+            if(!confirm("Tem a certeza? Isto vai APAGAR permanentemente documentos cujo campo 'nome' corresponda (ignora maiúsculas/minúsculas e espaços).")) return;
             
             try {
-                const namesToDelete = [
-                    'Vilamoura Taxi', 'Centro Hípico', 'Baja Bikes Vilamoura', 
-                    'Avalanche Algarve', 'Bike-a-Wish Tours', 'Vilamoura Watersports'
-                ];
+                showDebug('🗑️ A procurar duplicados...');
                 const snapshot = await db.collection('locais').get();
                 let deleted = 0;
+                const deletedNames = [];
                 
                 for (const doc of snapshot.docs) {
                     const data = doc.data();
-                    if (namesToDelete.includes(data.nome)) {
+                    const nomeNormalizado = (data.nome || '').trim().toLowerCase();
+                    
+                    // Matching flexível: ignora maiúsculas/minúsculas e espaços extras
+                    if (namesToDelete.some(name => nomeNormalizado.includes(name) || name.includes(nomeNormalizado))) {
                         await doc.ref.delete();
                         deleted++;
-                        console.log(`Removido: ${data.nome}`);
+                        deletedNames.push(data.nome);
+                        showDebug(`✅ Removido: "${data.nome}" (ID: ${doc.id})`);
                     }
                 }
-                showMessage(deleted > 0 ? `🗑️ ${deleted} duplicados removidos com sucesso!` : '✅ Nenhum duplicado encontrado.');
+                
+                if (deleted > 0) {
+                    showMessage(`🗑️ ${deleted} duplicados removidos: ${deletedNames.join(', ')}`);
+                    showDebug(`🗑️ Total removido: ${deleted}`);
+                } else {
+                    showMessage('✅ Nenhum duplicado encontrado com matching flexível.');
+                    showDebug('ℹ️ Nenhum nome correspondeu à lista de duplicados.');
+                }
             } catch (error) {
                 showMessage(`❌ Erro: ${error.message}`, true);
+                showDebug('Erro: ' + error.message);
             }
         }
 
