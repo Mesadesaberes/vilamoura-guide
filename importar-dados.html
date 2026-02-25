@@ -7,31 +7,53 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background: #f4f7f9; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { color: #003366; }
-        .btn { padding: 12px 24px; background: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        .btn { padding: 12px 24px; background: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px 5px; font-size: 14px; }
         .btn:hover { background: #004080; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
         .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
         .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
-        .category { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .warning { background: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .category { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366; }
         .category h2 { color: #003366; margin-top: 0; }
-        .note { font-size: 12px; color: #666; margin-top: 5px; }
+        .note { font-size: 12px; color: #666; margin-top: 5px; font-style: italic; }
+        .business-list { font-size: 13px; margin: 10px 0; padding-left: 20px; }
+        .business-list li { margin: 5px 0; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📥 Importar Dados para Firebase</h1>
-        <p class="note">Nota: As imagens usam placeholders. Pode substituir por fotos reais depois.</p>
+        <p class="note">Nota: As fotos já estão configuradas com URLs do Blogger.</p>
         
         <div id="messages"></div>
         
         <div class="category">
-            <h2>🚗 Transportes (4 negócios)</h2>
+            <h2>🚗 Transportes (3 negócios)</h2>
+            <ul class="business-list">
+                <li>✅ Taxis Vilamoura</li>
+                <li>✅ EVA Transportes</li>
+                <li>✅ Faro Airport Transfers</li>
+            </ul>
+            <p class="note">❌ Vilamoura Taxi será removido (duplicado)</p>
             <button class="btn" onclick="importTransportes()">Importar Transportes</button>
         </div>
         
         <div class="category">
             <h2>🎯 Experiências & Atividades (8 negócios)</h2>
+            <ul class="business-list">
+                <li>✅ Algarve Cave Tours</li>
+                <li>✅ Watersports Centre</li>
+                <li>✅ Dreams Cruises</li>
+                <li>✅ Baja Bikes</li>
+                <li>✅ Bike-a-Wish</li>
+                <li>✅ Avalanche Bikes</li>
+                <li>✅ Vilamoura Fishing</li>
+                <li>✅ Centro Hípico Vilamoura</li>
+            </ul>
+            <p class="note">❌ Duplicados serão removidos</p>
             <button class="btn" onclick="importExperiencias()">Importar Experiências</button>
         </div>
         
@@ -41,9 +63,22 @@
         </div>
         
         <div class="category">
-            <h2>🗑️ Limpar Duplicados (Opcional)</h2>
-            <button class="btn" style="background:#dc3545;" onclick="cleanDuplicates()">Remover Duplicados</button>
-            <p class="note">Remove negócios duplicados por nome nas novas categorias.</p>
+            <h2>🗑️ Limpar Duplicados</h2>
+            <p>Estes negócios serão removidos (nomes duplicados):</p>
+            <ul class="business-list">
+                <li>❌ Vilamoura Taxi</li>
+                <li>❌ Centro Hípico (manter: Centro Hípico Vilamoura)</li>
+                <li>❌ Baja Bikes Vilamoura (manter: Baja Bikes)</li>
+                <li>❌ Avalanche Algarve (manter: Avalanche Bikes)</li>
+                <li>❌ Bike-a-Wish Tours (manter: Bike-a-Wish)</li>
+                <li>❌ Vilamoura Watersports (manter: Watersports Centre)</li>
+            </ul>
+            <button class="btn btn-danger" onclick="cleanDuplicates()">Remover Duplicados</button>
+        </div>
+        
+        <div class="category">
+            <h2>🔄 Importar Tudo de Uma Vez</h2>
+            <button class="btn" onclick="importAll()">Importar Transportes + Experiências</button>
         </div>
     </div>
 
@@ -60,23 +95,8 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Placeholder image generator (sem espaços = sem erros)
-        const placeholder = (text) => 
-            `https://via.placeholder.com/400x300/003366/ffffff?text=${encodeURIComponent(text)}`;
-
-        // 🚗 TRANSPORTES - 4 negócios únicos
+        // 🚗 TRANSPORTES - 3 negócios (sem Vilamoura Taxi)
         const transportes = [
-            {
-                nome: "Vilamoura Taxi",
-                cat: "transportes",
-                icon: "🚖",
-                info: { pt: "Táxis e transfers aeroporto 24h. Serviço profissional.", en: "Taxis and airport transfers 24h. Professional service." },
-                tel: "+351932451496",
-                web: "https://vilamourataxi.com",
-                lat: 37.0760,
-                lng: -8.1180,
-                img: placeholder("Vilamoura-Taxi")
-            },
             {
                 nome: "Taxis Vilamoura",
                 cat: "transportes",
@@ -86,7 +106,7 @@
                 web: "https://taxisvilamoura.com",
                 lat: 37.0765,
                 lng: -8.1175,
-                img: placeholder("Taxis-Vilamoura")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEjbXk26jpw3pHOW0oM2gN3x1epO0280t0zGOe3c4D3HkbcDJds0EcCsRiMFj4Fepq7WIg5-4RjpQyQ9HPJgrMtDaHapIryR8DOpTnOObyhbn3RdR8c428STt_dO9pT5gX4gJsCN4MCAV7wDbOhoXna7cq4FEZ6hGjv7PwugRu_1Fc7FI1cai5ZY5dTKfAzV"
             },
             {
                 nome: "EVA Transportes",
@@ -97,7 +117,7 @@
                 web: "https://eva-bus.com",
                 lat: 37.0770,
                 lng: -8.1170,
-                img: placeholder("EVA-Transportes")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEg63w0o0eXeHKoM0Fe4M_HeZchZceAzoHhaIzeANrXF8aQagqLbegT_p7qci_mSD1j3oygNklL_fZsrkJMsmpkg54u2TcTIBThMWcG_r2SAUX029WYiIjjr4PWguLVk_Bf95MLmud0lVJaHMXxJcU1BjilqebMQ9_f25OQj0d2L53QhRFHRaaVQ5FP_loHJ"
             },
             {
                 nome: "Faro Airport Transfers",
@@ -108,11 +128,11 @@
                 web: "https://faro-airport-taxis.com",
                 lat: 37.0755,
                 lng: -8.1185,
-                img: placeholder("Airport-Transfers")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEigT1QV92BMQ7WyiPg_GLOhQNqfSd27E8TyIP04LlTXbD3HCsf28c-5I3W6v65Qu8kUBJVQzecSJ4oBgcDhiNE7baRfUUgvke9ejQvfKmLzmBjMI4VpJ-w_4Dqx1K6WtIXTrknrqNzPmbxgbGY2t_sh93qmAU8flTj-ugY9-zEvNr9yvbYN6a_rm5Q4HMpK"
             }
         ];
 
-        // 🎯 EXPERIÊNCIAS - 8 negócios únicos (SEM golf courses)
+        // 🎯 EXPERIÊNCIAS - 8 negócios únicos
         const experiencias = [
             {
                 nome: "Algarve Cave Tours",
@@ -123,10 +143,10 @@
                 web: "https://algarvecavetours.com",
                 lat: 37.0750,
                 lng: -8.1190,
-                img: placeholder("Cave-Tours")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEg0r7OsAeJLfa3DiWrHUIj1FiGvPqbMOiKhHqkHQaVBywaFNWonUI-RBgGilga33p35CmDqVcBwoEfdx1ooPdhKCyE6wEU3bWQZzr8pTVwFcDb-RoTg_rm2Dg6Y_lpLnvy4sAnqZoGnyPsG3s52yBLwJXbIOEI9vSz2mrvwtqTVSNCmHNkzEeCr4Qogy3j9"
             },
             {
-                nome: "Vilamoura Watersports",
+                nome: "Watersports Centre",
                 cat: "experiencias",
                 icon: "🏄",
                 info: { pt: "Jet ski, parasailing, passeios de barco.", en: "Jet ski, parasailing, boat trips." },
@@ -134,7 +154,7 @@
                 web: "https://watersportsalgarve.com",
                 lat: 37.0745,
                 lng: -8.1195,
-                img: placeholder("Watersports")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEiRI1iWb5t6rEF2_H2izGAPu41WWlVYvHikHYv__pqd6G8hwvh-3P1UcsTBlwsSJjBPIOgp6V6-6Fcc4njvS-XkTYmSpJTvUiEwUU_m_kThxT4f5yOBpVD6AStYjp-tQFYON6vwFH0JWUQxdLKPIpc1ow_rf9DMTnGlTx1G0mD9v2PXaVGzIeVQ6I5tl42b"
             },
             {
                 nome: "Dreams Cruises",
@@ -145,10 +165,10 @@
                 web: "https://vilamouradreamscruises.com",
                 lat: 37.0740,
                 lng: -8.1200,
-                img: placeholder("Dreams-Cruises")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEgisVYcUUFZbbDCHsnJE9WyEnjat_r37GzW5yfgPXIB91fNtUCAS72mEZ44RyJxOI_rXDBHfZOHg48bCauOLU2tdv1x01kmRWxf-fAr7eQpzmfqHVkECWNDD98R_OOjHOfNDRsTETeDq-3UOnrqlS1F-5UNnGwLX9NTaZynzDYe25kquEzrqSyyCh1JXf3N"
             },
             {
-                nome: "Baja Bikes Vilamoura",
+                nome: "Baja Bikes",
                 cat: "experiencias",
                 icon: "🚲",
                 info: { pt: "Aluguer de bicicletas. 20€/dia.", en: "Bike rental. €20/day." },
@@ -156,10 +176,10 @@
                 web: "https://bajabikes.eu",
                 lat: 37.0775,
                 lng: -8.1165,
-                img: placeholder("Baja-Bikes")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEjt67p1KB29sInfiCSEyeqKkEwqZF_KClVvLSaINMiSzwDSR5bUvfcx9BNsxjfPMOFwaKDNcQrLv0MZUs08bP33JTM1jplQP4XuoX69l7StfYAqODcsZtucXmZbllTt8xXVBk8AqFBsdXFq2j9-Jvhp33VK47e8DbSB5tFivtNE6PEBW1VQ0NkCWyLcMlJN"
             },
             {
-                nome: "Bike-a-Wish Tours",
+                nome: "Bike-a-Wish",
                 cat: "experiencias",
                 icon: "🚴",
                 info: { pt: "Tours de bicicleta e aluguer ecológico.", en: "Eco-friendly bike tours and rental." },
@@ -167,7 +187,7 @@
                 web: "https://bikeawish.com",
                 lat: 37.0780,
                 lng: -8.1160,
-                img: placeholder("Bike-a-Wish")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEhfTW71V69kz2FYmLZunVbrorzX24dI0E8I40JWIWbs8B9pBs2hJN_s0NGRii4fmxOwzbyDBWBfh6GrbIee6LvNDrn-6exKmsfOEniYGv24ZHIWg4cYy7IK8iKbgSYW6jQ3pGqxCWuEXmVspW9S9W_xj9Vm2eCRJkPuRRMFwrkJ-4DH-OmVhlmRTs4ST5iu"
             },
             {
                 nome: "Avalanche Bikes",
@@ -178,7 +198,7 @@
                 web: "https://avalanchealgarve.com",
                 lat: 37.0785,
                 lng: -8.1155,
-                img: placeholder("Avalanche-Bikes")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEhDVF60YTaGjoK0eSX-Tbb7x1aH1u0Mm_gTDFg1lmT-47UoA10tdSx_RjAeIo0v8mELYbDK50U9gi_-Rn6v9yqJHsig6xkKsZkuDcXxX7Vy4YaoszoFVixMRVd2_c66gZjrWFeHc8yJag997p7mq_pPOrOXK1kcv6sNDQfVFhnRm44dgGyEg0NnNVow3dxe"
             },
             {
                 nome: "Vilamoura Fishing",
@@ -189,7 +209,7 @@
                 web: "",
                 lat: 37.0735,
                 lng: -8.1205,
-                img: placeholder("Fishing")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEh9kBCdl5DvIW94PPRD0Xf5bbiKmsqaMh6TdwC6YfzPUEKJEQlSN1SBzV1uTomdnfP9XgwsKsR6kS_AJZY154zHYl1t4-t9foKXk-jaIsQsNxwwmblEwUoLRiR2RZdDO6XMr5Y4jjo_ERJWMvhzYroZQ59JRo9Ikkz1El45JaNrP0zX3KtZIYF1Bk2T0-sU"
             },
             {
                 nome: "Centro Hípico Vilamoura",
@@ -200,7 +220,7 @@
                 web: "",
                 lat: 37.0790,
                 lng: -8.1150,
-                img: placeholder("Equestrian")
+                img: "https://blogger.googleusercontent.com/img/a/AVvXsEglMvApiCsNj2-dIE_75ZjB8AQxQ54YF4nlq2TqMvtOhXxsaqH76_3254wu42F_2r9UAHkQT4v4AijkjV5a4A7ih5r0clbP4_IQgHi7_MzVXYAizsnFAzAYRs5n-ymFLfkKmszhgC94OUKxiweaj52UgBlVCZl1oDWIEQ7tyQbsJxMqgm5tQNa7zf1dLxUw"
             }
         ];
 
@@ -238,6 +258,19 @@
             }
         }
 
+        async function importAll() {
+            try {
+                let count = 0;
+                for (const item of [...transportes, ...experiencias]) {
+                    await db.collection('locais').add(item);
+                    count++;
+                }
+                showMessage(`✅ ${count} negócios importados no total!`);
+            } catch (error) {
+                showMessage(`❌ Erro: ${error.message}`, true);
+            }
+        }
+
         async function checkData() {
             try {
                 const snapshot = await db.collection('locais').get();
@@ -253,22 +286,22 @@
         async function cleanDuplicates() {
             try {
                 const snapshot = await db.collection('locais').get();
-                const names = {};
+                const namesToDelete = [
+                    'Vilamoura Taxi',
+                    'Centro Hípico',
+                    'Baja Bikes Vilamoura',
+                    'Avalanche Algarve',
+                    'Bike-a-Wish Tours',
+                    'Vilamoura Watersports'
+                ];
                 let deleted = 0;
                 
                 for (const doc of snapshot.docs) {
                     const data = doc.data();
-                    const cat = data.cat;
-                    const nome = data.nome;
-                    
-                    if (cat === 'transportes' || cat === 'experiencias') {
-                        const key = `${cat}-${nome}`;
-                        if (names[key]) {
-                            await doc.ref.delete();
-                            deleted++;
-                        } else {
-                            names[key] = true;
-                        }
+                    if (namesToDelete.includes(data.nome)) {
+                        await doc.ref.delete();
+                        deleted++;
+                        console.log(`Removido: ${data.nome}`);
                     }
                 }
                 showMessage(deleted > 0 ? `🗑️ ${deleted} duplicados removidos!` : '✅ Sem duplicados encontrados.');
