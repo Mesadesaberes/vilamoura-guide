@@ -736,18 +736,18 @@
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 
-    <!-- ✅ SERVICE WORKER REGISTRATION (PARA PWA FUNCIONAR) -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/Vilamoura-Select/sw.js')
-            .then(reg => {
-              console.log('✅ Service Worker registado!', reg.scope);
-              reg.update();
-            })
-            .catch(err => console.log('❌ Erro no Service Worker:', err));
-        });
-      }
-    </script>
+    <!-- ✅ SERVICE WORKER REGISTRATION (GitHub Pages) -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/Vilamoura-Select/sw.js')
+        .then(reg => {
+          console.log('✅ Service Worker registado!', reg.scope);
+          reg.update();
+        })
+        .catch(err => console.log('❌ Erro no Service Worker:', err));
+    });
+  }
+</script>
 </body>
 </html>
