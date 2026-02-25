@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vilamoura-select-v13';
+const CACHE_NAME = 'vilamoura-select-v14';
 const urlsToCache = [
   './index.html',
   './manifest.json'
