@@ -7,80 +7,70 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background: #f4f7f9; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { color: #003366; }
         .btn { padding: 12px 24px; background: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px 5px; font-size: 14px; }
         .btn:hover { background: #004080; }
         .btn-danger { background: #dc3545; }
         .btn-danger:hover { background: #c82333; }
-        .btn-warning { background: #ffc107; color: #000; }
-        .btn-warning:hover { background: #e0a800; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
         .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
         .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
-        .info { background: #cce5ff; color: #004085; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .warning { background: #fff3cd; color: #856404; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #ffc107; }
         .category { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366; }
         .category h2 { color: #003366; margin-top: 0; }
-        .business-list { font-size: 13px; margin: 10px 0; padding-left: 20px; }
-        .business-list li { margin: 5px 0; }
-        .debug-output { background: #f1f1f1; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; margin: 10px 0; }
+        .step { font-weight: bold; color: #003366; margin: 10px 0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📥 Importar Dados para Firebase</h1>
-        <p><strong>Nota:</strong> Este script usa as fotos reais que forneceu e remove duplicados com matching flexível.</p>
+        <h1>📥 Importar Dados - Versão Limpa</h1>
+        
+        <div class="warning">
+            ⚠️ <strong>ATENÇÃO:</strong> Clique em cada botão <strong>APENAS UMA VEZ</strong>. 
+            Cada clique ADICIONA dados, não substitui.
+        </div>
         
         <div id="messages"></div>
-        <div id="debug" class="debug-output" style="display:none;"></div>
         
         <div class="category">
-            <h2>🔍 Debug: Ver Nomes Existentes</h2>
-            <p>Mostra todos os negócios das categorias novas para confirmar duplicados:</p>
-            <button class="btn btn-warning" onclick="showExistingNames()">🔍 Mostrar Nomes Existentes</button>
+            <h2>🗑️ PASSO 1: Limpar TUDO das categorias novas</h2>
+            <p>Este botão APAGA todos os documentos com <code>cat: "transportes"</code> ou <code>cat: "experiencias"</code>.</p>
+            <p><strong>Use isto primeiro para começar do zero.</strong></p>
+            <button class="btn btn-danger" onclick="nukeCategories()">🗑️ APAGAR TUDO (Transportes + Experiências)</button>
         </div>
         
         <div class="category">
-            <h2>🗑️ Remover Duplicados (Matching Flexível)</h2>
-            <p>Estes nomes serão procurados (ignora maiúsculas/minúsculas e espaços):</p>
-            <ul class="business-list">
-                <li>❌ Vilamoura Taxi</li>
-                <li>❌ Centro Hípico</li>
-                <li>❌ Baja Bikes Vilamoura</li>
-                <li>❌ Avalanche Algarve</li>
-                <li>❌ Bike-a-Wish Tours</li>
-                <li>❌ Vilamoura Watersports</li>
-            </ul>
-            <button class="btn btn-danger" onclick="cleanDuplicates()">🗑️ REMOVER DUPLICADOS AGORA</button>
-        </div>
-        
-        <div class="category">
-            <h2>🚗 Importar Transportes (3 negócios com fotos)</h2>
-            <ul class="business-list">
-                <li>✅ Taxis Vilamoura</li>
-                <li>✅ EVA Transportes</li>
-                <li>✅ Faro Airport Transfers</li>
+            <h2>🚗 PASSO 2: Importar Transportes (3 negócios)</h2>
+            <p><strong>Clique apenas UMA vez:</strong></p>
+            <ul>
+                <li>Taxis Vilamoura</li>
+                <li>EVA Transportes</li>
+                <li>Faro Airport Transfers</li>
             </ul>
             <button class="btn" onclick="importTransportes()">Importar Transportes</button>
         </div>
         
         <div class="category">
-            <h2>🎯 Importar Experiências (8 negócios com fotos)</h2>
-            <ul class="business-list">
-                <li>✅ Algarve Cave Tours</li>
-                <li>✅ Watersports Centre</li>
-                <li>✅ Dreams Cruises</li>
-                <li>✅ Baja Bikes</li>
-                <li>✅ Bike-a-Wish</li>
-                <li>✅ Avalanche Bikes</li>
-                <li>✅ Vilamoura Fishing</li>
-                <li>✅ Centro Hípico Vilamoura</li>
+            <h2>🎯 PASSO 3: Importar Experiências (8 negócios)</h2>
+            <p><strong>Clique apenas UMA vez:</strong></p>
+            <ul>
+                <li>Algarve Cave Tours</li>
+                <li>Watersports Centre</li>
+                <li>Dreams Cruises</li>
+                <li>Baja Bikes</li>
+                <li>Bike-a-Wish</li>
+                <li>Avalanche Bikes</li>
+                <li>Vilamoura Fishing</li>
+                <li>Centro Hípico Vilamoura</li>
             </ul>
             <button class="btn" onclick="importExperiencias()">Importar Experiências</button>
         </div>
         
         <div class="category">
-            <h2>📊 Verificar Dados</h2>
-            <button class="btn" onclick="checkData()">Verificar Coleção 'locais'</button>
+            <h2>✅ PASSO 4: Verificar</h2>
+            <button class="btn btn-success" onclick="checkData()">Verificar Resultados</button>
         </div>
     </div>
 
@@ -95,16 +85,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-
-        // Nomes a remover (para matching flexível)
-        const namesToDelete = [
-            'vilamoura taxi',
-            'centro hípico',
-            'baja bikes vilamoura',
-            'avalanche algarve',
-            'bike-a-wish tours',
-            'vilamoura watersports'
-        ].map(n => n.trim().toLowerCase());
 
         // 🚗 TRANSPORTES - Com as suas fotos
         const transportes = [
@@ -196,76 +176,29 @@
             div.className = isError ? 'error' : 'success';
             div.textContent = text;
             document.getElementById('messages').appendChild(div);
-            setTimeout(() => div.remove(), 8000);
+            setTimeout(() => div.remove(), 10000);
         }
 
-        function showDebug(text) {
-            const debug = document.getElementById('debug');
-            debug.style.display = 'block';
-            debug.textContent += text + '\n';
-            debug.scrollTop = debug.scrollHeight;
-        }
-
-        // 🔍 FUNÇÃO PARA MOSTRAR NOMES EXISTENTES (DEBUG)
-        async function showExistingNames() {
-            try {
-                showDebug('🔍 A procurar nomes existentes...');
-                const snapshot = await db.collection('locais').get();
-                const newCats = ['transportes', 'experiencias'];
-                const found = [];
-                
-                snapshot.docs.forEach(doc => {
-                    const data = doc.data();
-                    if (newCats.includes(data.cat)) {
-                        found.push(`• "${data.nome}" (cat: ${data.cat}, ID: ${doc.id})`);
-                    }
-                });
-                
-                if (found.length === 0) {
-                    showDebug('⚠️ Nenhum negócio encontrado nas categorias novas.');
-                } else {
-                    showDebug('📋 Nomes encontrados:\n' + found.join('\n'));
-                }
-                showMessage(`🔍 Encontrados ${found.length} negócios nas categorias novas.`);
-            } catch (error) {
-                showMessage(`❌ Erro: ${error.message}`, true);
-                showDebug('Erro: ' + error.message);
-            }
-        }
-
-        // 🗑️ FUNÇÃO PARA REMOVER DUPLICADOS (MATCHING FLEXÍVEL)
-        async function cleanDuplicates() {
-            if(!confirm("Tem a certeza? Isto vai APAGAR permanentemente documentos cujo campo 'nome' corresponda (ignora maiúsculas/minúsculas e espaços).")) return;
+        // 🗑️ FUNÇÃO NUCLEAR: Apagar TUDO das duas categorias
+        async function nukeCategories() {
+            if(!confirm("⚠️ CONFIRMAÇÃO: Isto vai APAGAR PERMANENTEMENTE todos os documentos com cat='transportes' ou cat='experiencias'. Não há volta atrás. Continuar?")) return;
+            if(!confirm("⚠️ ÚLTIMA CHANCE: Tem a certeza absoluta?")) return;
             
             try {
-                showDebug('🗑️ A procurar duplicados...');
+                showMessage('🗑️ A apagar documentos...');
                 const snapshot = await db.collection('locais').get();
                 let deleted = 0;
-                const deletedNames = [];
                 
                 for (const doc of snapshot.docs) {
                     const data = doc.data();
-                    const nomeNormalizado = (data.nome || '').trim().toLowerCase();
-                    
-                    // Matching flexível: ignora maiúsculas/minúsculas e espaços extras
-                    if (namesToDelete.some(name => nomeNormalizado.includes(name) || name.includes(nomeNormalizado))) {
+                    if (data.cat === 'transportes' || data.cat === 'experiencias') {
                         await doc.ref.delete();
                         deleted++;
-                        deletedNames.push(data.nome);
-                        showDebug(`✅ Removido: "${data.nome}" (ID: ${doc.id})`);
                     }
                 }
-                
-                if (deleted > 0) {
-                    showMessage(`🗑️ ${deleted} duplicados removidos: ${deletedNames.join(', ')}`);
-                    showDebug(`🗑️ Total removido: ${deleted}`);
-                } else {
-                    showMessage('✅ Nenhum duplicado encontrado com matching flexível.');
-                    showDebug('ℹ️ Nenhum nome correspondeu à lista de duplicados.');
-                }
+                showMessage(`✅ ${deleted} documentos apagados com sucesso! Agora pode importar os dados corretos.`);
             } catch (error) {
                 showMessage(`❌ Erro: ${error.message}`, true);
-                showDebug('Erro: ' + error.message);
             }
         }
 
@@ -276,7 +209,7 @@
                     await db.collection('locais').add(item);
                     count++;
                 }
-                showMessage(`✅ ${count} Transportes importados com as fotos corretas!`);
+                showMessage(`✅ ${count} Transportes importados! (NÃO clique novamente)`);
             } catch (error) { showMessage(`❌ Erro: ${error.message}`, true); }
         }
 
@@ -287,7 +220,7 @@
                     await db.collection('locais').add(item);
                     count++;
                 }
-                showMessage(`✅ ${count} Experiências importadas com as fotos corretas!`);
+                showMessage(`✅ ${count} Experiências importadas! (NÃO clique novamente)`);
             } catch (error) { showMessage(`❌ Erro: ${error.message}`, true); }
         }
 
@@ -296,7 +229,15 @@
                 const snapshot = await db.collection('locais').get();
                 const tCount = snapshot.docs.filter(d => d.data().cat === 'transportes').length;
                 const eCount = snapshot.docs.filter(d => d.data().cat === 'experiencias').length;
-                showMessage(`📊 Total: ${snapshot.size} | Transportes: ${tCount} | Experiências: ${eCount}`);
+                const total = snapshot.size;
+                
+                let msg = `📊 Total: ${total} | Transportes: ${tCount} | Experiências: ${eCount}`;
+                if (tCount === 3 && eCount === 8) {
+                    msg += ' ✅ PERFEITO!';
+                } else {
+                    msg += ' ⚠️ Valores inesperados - use "Apagar Tudo" e tente novamente.';
+                }
+                showMessage(msg);
             } catch (error) { showMessage(`❌ Erro: ${error.message}`, true); }
         }
     </script>
