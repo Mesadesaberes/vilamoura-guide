@@ -2,58 +2,32 @@ const CACHE_NAME = 'vilamoura-select-v14';
 const urlsToCache = [
   '/Vilamoura-Select/',
   '/Vilamoura-Select/index.html',
-  '/Vilamoura-Select/manifest.json',
-  '/Vilamoura-Select/icon-192.png',
-  '/Vilamoura-Select/icon-512.png'
+  '/Vilamoura-Select/manifest.json'
 ];
 
-// Instalar Service Worker
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cache aberto:', CACHE_NAME);
-        return cache.addAll(urlsToCache);
-      })
-      .catch(err => console.log('Erro ao cachear:', err))
+      .then(cache => cache.addAll(urlsToCache))
   );
-  self.skipWaiting(); // Força ativação imediata
+  self.skipWaiting();
 });
 
-// Ativar Service Worker
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Cache antigo removido:', cacheName);
-            return caches.delete(cacheName);
-          }
+        cacheNames.map(name => {
+          if (name !== CACHE_NAME) return caches.delete(name);
         })
       );
     })
   );
-  self.clients.claim(); // Assume controlo imediato
+  self.clients.claim();
 });
 
-// Intercepta pedidos de rede
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request)
-          .then(networkResponse => {
-            // Opcional: cachear novas respostas
-            return networkResponse;
-          });
-      })
-      .catch(() => {
-        // Fallback para offline
-        return caches.match('/Vilamoura-Select/index.html');
-      })
+    caches.match(event.request).then(res => res || fetch(event.request))
   );
 });
