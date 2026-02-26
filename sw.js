@@ -1,11 +1,11 @@
-const CACHE_NAME = 'vilamoura-select-v15';
+const CACHE_NAME = 'vilamoura-select-v16';
 
 const urlsToCache = [
-  '/Vilamoura-Select/',
-  '/Vilamoura-Select/index.html',
-  '/Vilamoura-Select/manifest.json',
-  '/Vilamoura-Select/icon-192.png',
-  '/Vilamoura-Select/icon-512.png'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 // Instalar Service Worker
@@ -49,7 +49,7 @@ self.addEventListener('fetch', event => {
         return fetch(event.request)
           .catch(() => {
             // Fallback para offline
-            return caches.match('/Vilamoura-Select/index.html');
+            return caches.match('/index.html');
           });
       })
   );
