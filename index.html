@@ -181,7 +181,18 @@
         .lang-btn { background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff; padding: 4px 6px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; min-width: 40px; }
         .lang-btn.active { background: #c5a059; border-color: #c5a059; }
 
-        .app-content { height: calc(100vh - 45px); position: relative; width: 100%; }
+        /* ✅ MENSAGEM PERSONALIZADA */
+        .personalized-message {
+            background: linear-gradient(135deg, #003366 0%, #004080 100%);
+            color: #ffffff;
+            padding: 10px 15px;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .app-content { height: calc(100vh - 90px); position: relative; width: 100%; }
         .menu-view { height: 100%; overflow-y: auto; padding-bottom: 20px; box-sizing: border-box; }
         
         .search-area { padding: 15px; position: sticky; top: 0; background: #f4f7f9; z-index: 10; }
@@ -420,6 +431,37 @@
             return url.trim().replace(/\s+/g, '');
         };
 
+        // ✅ MENSAGEM PERSONALIZADA POR HORA DO DIA
+        const getPersonalizedMessage = (lang) => {
+          const hour = new Date().getHours();
+          const day = new Date().getDay();
+          const isWeekend = day === 0 || day === 6;
+          
+          const messages = {
+            pt: {
+              morning: isWeekend ? "☀️ Bom fim de semana em Vilamoura!" : "☀️ Bom dia! Pronto para explorar?",
+              lunch: "🍽️ Hora de almoço? Veja os nossos restaurantes!",
+              afternoon: "🌊 Boa tarde! A marina espera por si.",
+              evening: "🌙 Boa noite! Descubra a vida noturna.",
+              night: "✨ Bem-vindo a Vilamoura!"
+            },
+            en: {
+              morning: isWeekend ? "☀️ Great weekend in Vilamoura!" : "☀️ Good morning! Ready to explore?",
+              lunch: "🍽️ Lunch time? Check out our restaurants!",
+              afternoon: "🌊 Good afternoon! The marina awaits.",
+              evening: "🌙 Good evening! Discover the nightlife.",
+              night: "✨ Welcome to Vilamoura!"
+            }
+          };
+          
+          const m = messages[lang] || messages.en;
+          if (hour >= 6 && hour < 12) return m.morning;
+          if (hour >= 12 && hour < 14) return m.lunch;
+          if (hour >= 14 && hour < 19) return m.afternoon;
+          if (hour >= 19 && hour < 23) return m.evening;
+          return m.night;
+        };
+
         function App() {
           const [view, setView] = useState('splash');
           const [lang, setLang] = useState('pt');
@@ -438,6 +480,7 @@
           const directionsRenderer = useRef(null);
 
           const t = i18n[lang] || i18n.en;
+          const personalizedMessage = getPersonalizedMessage(lang);
 
           useEffect(() => {
             const savedLang = localStorage.getItem('vilamoura_lang');
@@ -670,6 +713,12 @@
                   <button key={l} className={`lang-btn ${lang === l ? 'active' : ''}`} onClick={() => setLang(l)}>{l.toUpperCase()}</button>
                 ))}
               </div>
+              
+              {/* ✅ MENSAGEM PERSONALIZADA */}
+              <div className="personalized-message">
+                {personalizedMessage}
+              </div>
+              
               <div className="app-content">
                 <div className="menu-view" style={{ display: subView !== 'mapa' ? 'block' : 'none' }}>
                     <div className="search-area">
@@ -736,18 +785,18 @@
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 
-    <!-- ✅ SERVICE WORKER REGISTRATION (GitHub Pages) -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/Vilamoura-Select/sw.js')
-        .then(reg => {
-          console.log('✅ Service Worker registado!', reg.scope);
-          reg.update();
-        })
-        .catch(err => console.log('❌ Erro no Service Worker:', err));
-    });
-  }
-</script>
+    <!-- ✅ SERVICE WORKER REGISTRATION (Domínio Próprio) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => {
+              console.log('✅ Service Worker registado!', reg.scope);
+              reg.update();
+            })
+            .catch(err => console.log('❌ Erro no Service Worker:', err));
+        });
+      }
+    </script>
 </body>
 </html>
