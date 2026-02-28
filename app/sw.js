@@ -1,11 +1,11 @@
 const CACHE_NAME = 'vilamoura-select-v16';
 
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/app/',
+  '/app/index.html',
+  '/app/manifest.json',
+  '/app/icon-192.png',
+  '/app/icon-512.png'
 ];
 
 // Instalar Service Worker
@@ -54,3 +54,4 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+
