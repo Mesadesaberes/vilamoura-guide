@@ -1,1 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vilamoura Select - O seu guia independente de Vilamoura</title>
+    <meta name="description" content="Descubra o melhor de Vilamoura - restaurantes, hotéis, golfe e atividades. App gratuita, offline e multilíngue.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f4f7f9; }
+        
+        /* Container */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Hero Section */
+        .hero { 
+            background: linear-gradient(135deg, #003366 0%, #004080 100%); 
+            color: white; 
+            padding: 80px 0; 
+            text-align: left;
+        }
+        .hero h1 { font-size: 42px; margin-bottom: 15px; font-weight: 700; }
+        .hero p { font-size: 18px; opacity: 0.95; max-width: 650px; margin-bottom: 30px; line-height: 1.8; }
+        .hero-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
+        .btn { 
+            display: inline-block; 
+            padding: 14px 32px; 
+            background: #c5a059; 
+            color: #003366; 
+            text-decoration: none; 
+            border-radius: 30px; 
+            font-weight: 700; 
+            font-size: 15px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover { background: #d4af6a; transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid white; color: white; }
+        .btn-outline:hover { background: white; color: #003366; }
+        
+        /* Stats Section */
+        .stats { padding: 60px 0; background: white; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
+        .stat-item { text-align: left; }
+        .stat-number { font-size: 42px; font-weight: 700; color: #c5a059; margin-bottom: 5px; }
+        .stat-label { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Features Section */
+        .features { padding: 60px 0; }
+        .section-title { font-size: 32px; color: #003366; margin-bottom: 40px; font-weight: 700; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .feature-card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+        .feature-card i { font-size: 36px; color: #003366; margin-bottom: 20px; }
+        .feature-card h3 { font-size: 18px; color: #003366; margin-bottom: 10px; }
+        .feature-card p { font-size: 14px; color: #666; line-height: 1.7; }
+        
+        /* Categories Section */
+        .categories { padding: 60px 0; background: white; }
+        .categories-list { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 15px; 
+        }
+        .category-item { 
+            background: #f4f7f9; 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            text-align: left;
+            font-weight: 600;
+            color: #003366;
+        }
+        .category-item i { margin-right: 10px; color: #c5a059; }
+        
+        /* B2B Section */
+        .b2b { 
+            padding: 80px 0; 
+            background: linear-gradient(135deg, #003366 0%, #004080 100%); 
+            color: white; 
+        }
+        .b2b .section-title { color: white; }
+        .b2b-content { max-width: 800px; }
+        .b2b p { font-size: 16px; opacity: 0.95; margin-bottom: 25px; line-height: 1.8; }
+        .benefits-list { list-style: none; margin: 30px 0; }
+        .benefits-list li { 
+            padding: 8px 0; 
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .benefits-list li i { color: #c5a059; margin-right: 12px; font-size: 16px; }
+        
+        /* Pricing */
+        .pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin: 40px 0; }
+        .pricing-card { 
+            background: white; 
+            color: #333; 
+            padding: 30px; 
+            border-radius: 10px; 
+            text-align: left;
+            position: relative;
+        }
+        .pricing-card.featured { border: 3px solid #c5a059; transform: scale(1.05); }
+        .pricing-card h3 { font-size: 20px; color: #003366; margin-bottom: 10px; }
+        .pricing-card .price { font-size: 32px; font-weight: 700; color: #c5a059; margin-bottom: 20px; }
+        .pricing-card .price span { font-size: 14px; color: #666; font-weight: 400; }
+        .pricing-card ul { list-style: none; margin: 20px 0; }
+        .pricing-card ul li { padding: 8px 0; font-size: 14px; color: #666; }
+        .pricing-card ul li i { color: #27ae60; margin-right: 8px; }
+        .badge { 
+            position: absolute; 
+            top: -12px; 
+            right: 20px; 
+            background: #c5a059; 
+            color: #003366; 
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: 700;
+        }
+        
+        /* Launch Offer */
+        .launch-offer { 
+            background: rgba(197, 160, 89, 0.2); 
+            border: 2px solid #c5a059; 
+            border-radius: 10px; 
+            padding: 25px; 
+            margin: 30px 0;
+            text-align: left;
+        }
+        .launch-offer h3 { color: #c5a059; font-size: 20px; margin-bottom: 10px; }
+        .launch-offer p { font-size: 15px; margin-bottom: 10px; }
+        .launch-offer .discount { font-weight: 700; color: white; }
+        
+        /* CTA Buttons */
+        .cta-buttons { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 30px; }
+        .cta-buttons .btn { background: #c5a059; color: #003366; }
+        .cta-buttons .btn-secondary { background: white; color: #003366; }
+        
+        /* Footer */
+        footer { background: #002244; color: white; padding: 40px 0; text-align: left; }
+        footer p { opacity: 0.8; font-size: 14px; margin-bottom: 10px; }
+        footer a { color: #c5a059; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero { padding: 50px 0; }
+            .hero h1 { font-size: 32px; }
+            .hero p { font-size: 16px; }
+            .section-title { font-size: 26px; }
+            .pricing-card.featured { transform: scale(1); }
+            .stats-grid { gap: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>🌊 Descubra Vilamoura na sua totalidade.</h1>
+            <p>O seu guia independente para explorar restaurantes, hotéis, golfe e muito mais. Gratuito, funciona offline e disponível em 5 idiomas.</p>
+            <div class="hero-buttons">
+                <a href="/app/" class="btn">📱 ABRIR APP</a>
+                <a href="#anuncie" class="btn btn-outline">🏢 ANUNCIAR</a>
+            </div>
+        </div>
+    </section>
 
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">+10</div>
+                    <div class="stat-label">Utilizadores Ativos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Categorias</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Idiomas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Gratuito</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">PORQUE USAR A APP?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Mapa Interativo</h3>
+                    <p>Encontre todos os negócios no mapa com um clique. Localização precisa e rotas integradas.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-wifi"></i>
+                    <h3>Funciona Offline</h3>
+                    <p>Use a app mesmo sem conexão de internet. Ideal para turistas sem dados móveis.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-language"></i>
+                    <h3>Multilíngue</h3>
+                    <p>Disponível em Português, Inglês, Francês, Alemão e Espanhol. Todos se sentem em casa.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Instala como App</h3>
+                    <p>Adicione ao ecrã principal do telemóvel em segundos. Sem lojas de apps, sem downloads complicados.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">O QUE ENCONTRA</h2>
+            <div class="categories-list">
+                <div class="category-item"><i class="fas fa-hotel"></i>Hotéis</div>
+                <div class="category-item"><i class="fas fa-utensils"></i>Restaurantes</div>
+                <div class="category-item"><i class="fas fa-glass-cheers"></i>Bares</div>
+                <div class="category-item"><i class="fas fa-camera-retro"></i>Lazer</div>
+                <div class="category-item"><i class="fas fa-golf-ball-tee"></i>Golfe</div>
+                <div class="category-item"><i class="fas fa-bag-shopping"></i>Lojas</div>
+                <div class="category-item"><i class="fas fa-house-chimney"></i>Imobiliárias</div>
+                <div class="category-item"><i class="fas fa-shield-halved"></i>Serviços Úteis</div>
+                <div class="category-item"><i class="fas fa-bus"></i>Transportes</div>
+                <div class="category-item"><i class="fas fa-ticket-alt"></i>Experiências</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- B2B Section -->
+    <section class="b2b" id="anuncie">
+        <div class="container">
+            <div class="b2b-content">
+                <h2 class="section-title">🏢 TEM UM NEGÓCIO EM VILAMOURA?</h2>
+                <p>O Vilamoura Select é usado por visitantes que estão ativamente à procura de restaurantes, hotéis, atividades e muito mais na região.</p>
+                <p>Destaque o seu negócio e seja uma das primeiras opções que eles veem.</p>
+                
+                <ul class="benefits-list">
+                    <li><i class="fas fa-check-circle"></i>Posição privilegiada na categoria</li>
+                    <li><i class="fas fa-check-circle"></i>Fotos do seu negócio em destaque</li>
+                    <li><i class="fas fa-check-circle"></i>Link direto para website ou reservas</li>
+                    <li><i class="fas fa-check-circle"></i>Contacto direto (telefone/email)</li>
+                    <li><i class="fas fa-check-circle"></i>Localização no mapa interativo</li>
+                    <li><i class="fas fa-check-circle"></i>Analytics básico de visualizações e cliques</li>
+                </ul>
+
+                <!-- Pricing -->
+                <div class="pricing">
+                    <div class="pricing-card">
+                        <h3>🥉 BÁSICO</h3>
+                        <div class="price">€29<span>/mês</span></div>
+                        <ul>
+                            <li><i class="fas fa-check"></i>Lista na categoria</li>
+                            <li><i class="fas fa-check"></i>Nome e contacto</li>
+                            <li><i class="fas fa-check"></i>Localização no mapa</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-card featured">
+                        <span class="badge">MAIS POPULAR</span>
+                        <h3>🥈 DESTAQUE</h3>
+                        <div class="price">€59<span>/mês</span></div>
+                        <ul>
+                            <li><i class="fas fa-check"></i>Tudo do Básico</li>
+                            <li><i class="fas fa-check"></i>Topo da lista</li>
+                            <li><i class="fas fa-check"></i>Foto em destaque</li>
+                            <li><i class="fas fa-check"></i>Descrição até 100 palavras</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-card">
+                        <h3>🥇 PREMIUM</h3>
+                        <div class="price">€99<span>/mês</span></div>
+                        <ul>
+                            <li><i class="fas fa-check"></i>Tudo do Destaque</li>
+                            <li><i class="fas fa-check"></i>Link para reservas</li>
+                            <li><i class="fas fa-check"></i>Analytics de cliques</li>
+                            <li><i class="fas fa-check"></i>Prioridade em atualizações</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Launch Offer -->
+                <div class="launch-offer">
+                    <h3>🎉 OFERTA DE LANÇAMENTO</h3>
+                    <p class="discount">PRIMEIROS 10 PARCEIROS: 50% DE DESCONTO NOS PRIMEIROS 3 MESES!</p>
+                    <p>Básico: <strong>€14,50/mês</strong> | Destaque: <strong>€29,50/mês</strong> | Premium: <strong>€49,50/mês</strong></p>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="cta-buttons">
+                    <a href="mailto:geral@vilamouraselect.pt?subject=Quero Anunciar - Vilamoura Select" class="btn">📧 ENVIAR EMAIL</a>
+                    <a href="https://wa.me/3519XXXXXXXX?text=Olá, gostaria de saber mais sobre anunciar no Vilamoura Select." class="btn btn-secondary">💬 WHATSAPP</a>
+                </div>
+                <p style="margin-top: 20px; opacity: 0.8; font-size: 13px;">Sem fidelização. Cancele quando quiser. Faturação com recibo verde.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 Vilamoura Select. Todos os direitos reservados.</p>
+            <p>📧 geral@vilamouraselect.pt | 🌐 vilamouraselect.pt</p>
+            <p style="margin-top: 15px; opacity: 0.6; font-size: 12px;">Feito com ❤️ em Portugal</p>
+        </div>
+    </footer>
+</body>
+</html>
