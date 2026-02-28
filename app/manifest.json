@@ -2,7 +2,7 @@
   "name": "Vilamoura Select",
   "short_name": "Vilamoura Select",
   "description": "O seu guia independente de Vilamoura",
-  "start_url": "/index.html",
+  "start_url": "/app/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#003366",
@@ -22,3 +22,4 @@
     }
   ]
 }
+
